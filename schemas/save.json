@@ -11,6 +11,10 @@
             "properties": {
                 "loops": { "type": "integer", "minimum": 1 },
                 "facts": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+                "factLoops": {
+                    "type": "object",
+                    "additionalProperties": { "type": "integer", "minimum": 1 }
+                },
                 "unlocked": { "type": "array", "items": { "type": "string" } },
                 "endings": { "type": "array", "items": { "type": "string" } },
                 "loopBroken": { "type": "boolean" },

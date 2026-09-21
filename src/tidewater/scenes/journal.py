@@ -44,8 +44,11 @@ class Journal(Scene):
         for factId in facts.FACTS:  # registry order, not learning order
             if self.meta.knows(factId):
                 marker = "*" if factId in facts.TRAIL else "-"
+                loop = self.meta.learnedIn(factId)
+                when = "" if loop is None else " - loop %d" % loop
                 lines.append(
-                    "%s %s\n  %s" % (marker, facts.title(factId), facts.text(factId))
+                    "%s %s%s\n  %s"
+                    % (marker, facts.title(factId), when, facts.text(factId))
                 )
         lines.append("\n(* marks the trail of the bell.)")
         return "\n\n".join(lines)

@@ -207,7 +207,8 @@ def test_a_saved_game_reloads_where_it_left_off(scripted, tmp_path):
     assert game2.meta.loops == 2
     assert game2.meta.knows(facts.MARIGOLD)
     assert ui2.menus[0][1][0] == "Load Slot 1 (Loop 2, 4 known)"
-    assert ui2.saw("The Marigold")
+    assert ui2.saw("* The Marigold - loop 1")
+    assert ui2.saw("* The bell - loop 1")
     assert ui2.saw("* marks the trail")
 
 

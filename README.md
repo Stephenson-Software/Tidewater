@@ -33,7 +33,9 @@ pip install -r requirements.txt
 
 ## How it works
 
-The day is fifteen hours long and every action costs one. Five places — the docks, Gilbert's shop, home, the tavern, the bank — and four villagers who keep hours. Talk to people. Some of what they say is a **fact**, and facts survive the night: they appear in your journal and they open new questions on other villagers' menus. There is one trail to the bell, four facts long, and the whole of it can be walked in a single day once you know the way. It cannot be walked in the first.
+The day is fifteen hours long and every action costs one. Seven places — the docks, Gilbert's shop, home, the tavern, the bank, the lighthouse on the point, the churchyard above the village — and six villagers who keep hours. Talk to people. Some of what they say is a **fact**, and facts survive the night: they appear in your journal and they open new questions on other villagers' menus. Facts also point at each other, Outer Wilds fashion: under each one the journal lists where it leads that you haven't been, without ever naming what is there. There are ten facts; one trail to the bell, four facts long, and the whole of it can be walked in a single day once you know the way. It cannot be walked in the first.
+
+Some of what people ask you is a **choice**, not a question, and the village holds you to it — for a day. Tell Margaret that Tom should see the ledger and she walks it across the road at closing; hurry Ada through the story of that night and she says nothing more until the bell. *Margaret will remember that.* The reset forgets it; that is the loop.
 
 The state is in two tiers, which is the whole design:
 

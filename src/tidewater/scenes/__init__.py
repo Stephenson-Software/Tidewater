@@ -9,6 +9,8 @@ from tidewater.scenes.home import Home
 from tidewater.scenes.tavern import Tavern
 from tidewater.scenes.bank import Bank
 from tidewater.scenes.journal import Journal
+from tidewater.scenes.lighthouse import Lighthouse
+from tidewater.scenes.churchyard import Churchyard
 
 QUIT = "quit"
 
@@ -21,4 +23,6 @@ def build(game):
         "tavern": Tavern(game),
         "bank": Bank(game),
         "journal": Journal(game),
+        "lighthouse": Lighthouse(game),
+        "churchyard": Churchyard(game),
     }

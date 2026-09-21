@@ -17,7 +17,7 @@ class Journal(Scene):
         options = ["What you know", "The day, as you know it", "Close the journal"]
         choice = int(self.ui.showOptions(self.descriptor(), options))
         if choice == 1:
-            self.ui.showDialogue(self.knownText())
+            self.ui.showDialogue(self.knownText() + self.leadsText())
             return self.id
         if choice == 2:
             self.ui.showDialogue(self.timetableText())
@@ -52,6 +52,20 @@ class Journal(Scene):
                 )
         lines.append("\n(* marks the trail of the bell.)")
         return "\n\n".join(lines)
+
+    def leadsText(self):
+        """The rumour web: under what you know, where it points that you
+        haven't been. Never names the missing fact - says where to look."""
+        lines = []
+        for factId in facts.FACTS:
+            if not self.meta.knows(factId):
+                continue
+            for target, text in facts.leads(factId):
+                if not self.meta.knows(target) and text not in lines:
+                    lines.append(text)
+        if not lines:
+            return ""
+        return "\n\nThere's more to learn:\n" + "\n".join("? " + line for line in lines)
 
     def timetableText(self):
         rows = [

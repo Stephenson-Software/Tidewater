@@ -8,7 +8,7 @@ from tidewater.scenes.base import Scene
 
 class Bank(Scene):
     id = "bank"
-    travelTo = ("docks", "shop", "home", "tavern")
+    travelTo = ("docks", "shop", "home", "tavern", "lighthouse", "churchyard")
 
     def descriptor(self):
         if bankOpen(self.loop.hour):
@@ -33,7 +33,7 @@ class Bank(Scene):
         if kind == "quit":
             return "quit"
         if kind == "margaret":
-            self.ui.showInteractiveDialogue(villagers.margaret(self.game))
+            self.talk(villagers.margaret(self.game), villagers.TOLD_MARGARET_ABOUT_TOM)
         elif kind == "wait":
             self.game.prompt.text = "An hour passes."
         outcome = self.game.advance(1)

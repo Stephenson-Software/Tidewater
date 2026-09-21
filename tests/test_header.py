@@ -12,7 +12,7 @@ def test_a_fresh_game():
     game = FakeGame()
     assert buildHeader(game) == {
         "title": "Tidewater - Loop 1",
-        "chips": ["Loop 1", "8:00 AM", "The Docks", "Known: 0/7"],
+        "chips": ["Loop 1", "8:00 AM", "The Docks", "Known: 0/%d" % len(facts.FACTS)],
     }
 
 
@@ -30,7 +30,7 @@ def test_carried_items_and_knowledge_show():
     game.learn(facts.THE_BELL)
     game.learn(facts.MARIGOLD)
     assert "Carrying: the bell rope" in chips(game)
-    assert "Known: 2/7" in chips(game)
+    assert "Known: 2/%d" % len(facts.FACTS) in chips(game)
 
 
 def test_after_the_bell_the_header_counts_days():
@@ -44,5 +44,5 @@ def test_after_the_bell_the_header_counts_days():
 
 def test_an_unknown_location_shows_blank_rather_than_crashing():
     game = FakeGame()
-    game.loop.location = "lighthouse"
+    game.loop.location = "boathouse"
     assert "" in chips(game)

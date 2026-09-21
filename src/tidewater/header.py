@@ -10,6 +10,8 @@ LOCATION_NAMES = {
     "home": "Home",
     "tavern": "The Tavern",
     "bank": "The Bank",
+    "lighthouse": "The Lighthouse",
+    "churchyard": "The Churchyard",
 }
 
 ITEM_NAMES = {"rope": "the bell rope"}

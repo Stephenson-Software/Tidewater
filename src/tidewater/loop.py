@@ -22,6 +22,9 @@ BANK_OPEN, BANK_CLOSE = 9, 15
 SHOP_OPEN, SHOP_CLOSE = 8, 18
 TAVERN_OPEN = 18
 SAM_LEAVES = 17
+# Ada douses the lamp at dawn, walks the front, and is back up the point by
+# nine; the lamp room is hers until the storm shuts the pier.
+KEEPER_LEAVES_DOCKS = 9
 
 ROPE_HUNG = "ropeHung"
 ENDING_BELL = "bell"
@@ -43,6 +46,14 @@ def samAtDocks(hour):
     return hour < SAM_LEAVES
 
 
+def keeperAtDocks(hour):
+    return hour < KEEPER_LEAVES_DOCKS
+
+
+def lighthouseOpen(hour):
+    return KEEPER_LEAVES_DOCKS <= hour < STORM_HOUR
+
+
 def stormRaging(hour):
     return hour >= STORM_HOUR
 
@@ -55,6 +66,7 @@ def timetable(meta):
     rows = [
         (SHOP_OPEN, "Gilbert opens the shop (until %s)." % formatHour(SHOP_CLOSE)),
         (BANK_OPEN, "Margaret opens the bank (until %s)." % formatHour(BANK_CLOSE)),
+        (KEEPER_LEAVES_DOCKS, "Ada goes back up to the lighthouse."),
         (SAM_LEAVES, "Sam leaves the docks."),
         (TAVERN_OPEN, "Old Tom opens the tavern."),
     ]
@@ -63,7 +75,9 @@ def timetable(meta):
             (
                 STORM_HOUR,
                 _witnessed(
-                    "The storm comes in. The docks are cut off.", meta, facts.THE_STORM
+                    "The storm comes in. The docks and the point are cut off.",
+                    meta,
+                    facts.THE_STORM,
                 ),
             )
         )
@@ -177,12 +191,21 @@ def _ringForTheMarigold(game, outcome):
         "should have rung thirty years ago, out over the water where the "
         "Marigold went down."
     )
-    outcome.lines.append(
-        "Lights come on along the front. Old Tom is standing at the tavern "
-        "door with his hat off. When the last note has gone out over the "
-        "water there is nothing after it but the night, and the night, for "
-        "the first time, goes on."
-    )
+    if game.loop.flags.get("toldTomOfNell"):
+        outcome.lines.append(
+            "Lights come on along the front. Old Tom is standing at the tavern "
+            "door with his hat off, and he is saying something over and over "
+            "that you are too far away to hear and do not need to. When the "
+            "last note has gone out over the water there is nothing after it "
+            "but the night, and the night, for the first time, goes on."
+        )
+    else:
+        outcome.lines.append(
+            "Lights come on along the front. Old Tom is standing at the tavern "
+            "door with his hat off. When the last note has gone out over the "
+            "water there is nothing after it but the night, and the night, for "
+            "the first time, goes on."
+        )
     outcome.lines.append("You have broken the loop. Loop %d was the last." % meta.loops)
     outcome.reset = True
     _newDay(game)

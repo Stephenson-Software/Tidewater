@@ -6,7 +6,7 @@ from tidewater.scenes.base import Scene
 
 class Home(Scene):
     id = "home"
-    travelTo = ("docks", "shop", "tavern", "bank")
+    travelTo = ("docks", "shop", "tavern", "bank", "lighthouse", "churchyard")
 
     def descriptor(self):
         return "Home: a bunk, a stove, a window on the harbour. The bed is made, as it is every morning."

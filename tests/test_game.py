@@ -122,7 +122,12 @@ def test_the_header_follows_the_state(scripted):
     game, ui = scripted(LOOP_ONE + LOOP_TWO)
     game.play()
     chips = [[c["text"] for c in h["chips"]] for h in ui.headers]
-    assert chips[1] == ["Loop 1", "8:00 AM", "The Docks", "Known: 0/7"]
+    assert chips[1] == [
+        "Loop 1",
+        "8:00 AM",
+        "The Docks",
+        "Known: 0/%d" % len(facts.FACTS),
+    ]
     assert any("Loop 2" in c and "Carrying: the bell rope" in c for c in chips)
     hung = [c for c in chips if "Loop 2" in c and "8:00 PM" in c][0]
     assert "Carrying: the bell rope" not in hung  # hung, not carried

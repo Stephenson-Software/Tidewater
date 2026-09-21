@@ -2,7 +2,7 @@
 from tak import formatHour
 
 from tidewater import facts, villagers
-from tidewater.loop import BELL_HOUR, ROPE_HUNG, samAtDocks, stormRaging
+from tidewater.loop import BELL_HOUR, ROPE_HUNG, keeperAtDocks, samAtDocks, stormRaging
 from tidewater.scenes.base import Scene
 
 CATCHES = [
@@ -19,7 +19,7 @@ CATCHES = [
 
 class Docks(Scene):
     id = "docks"
-    travelTo = ("shop", "home", "tavern", "bank")
+    travelTo = ("shop", "home", "tavern", "bank", "lighthouse", "churchyard")
 
     def descriptor(self):
         hour = self.loop.hour
@@ -37,6 +37,11 @@ class Docks(Scene):
             )
         if hour == 8:
             return "The docks, eight in the morning. Again."
+        if keeperAtDocks(hour):
+            return (
+                "The docks. Sam is at the nets, and Ada from the lighthouse is "
+                "walking the front with the lamp's oil can, as she does at dawn."
+            )
         if samAtDocks(hour):
             return "The docks. Sam is at the nets. The bell tower stands at the end of the pier."
         return "The docks, empty but for the gulls. The bell tower stands at the end of the pier."
@@ -48,6 +53,9 @@ class Docks(Scene):
         if samAtDocks(self.loop.hour):
             options.append("Talk to Sam")
             actions.append(("sam", None))
+        if keeperAtDocks(self.loop.hour):
+            options.append("Talk to Ada")
+            actions.append(("ada", None))
         if self.loop.has(villagers.ROPE) and not self.loop.flags.get(ROPE_HUNG):
             options.append("Climb the tower and hang the bell rope")
             actions.append(("hang", None))
@@ -72,6 +80,9 @@ class Docks(Scene):
             return self.afterHour()
         if kind == "sam":
             self.ui.showInteractiveDialogue(villagers.sam(self.game))
+            return self.afterHour()
+        if kind == "ada":
+            self.ui.showInteractiveDialogue(villagers.ada(self.game))
             return self.afterHour()
         if kind == "tower":
             self.ui.showDialogue(

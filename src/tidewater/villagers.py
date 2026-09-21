@@ -15,6 +15,12 @@ from tidewater import facts
 
 ROPE = "rope"
 
+# Choices people hold you to for the day - see Scene.remember. Loop flags,
+# so the bell forgets them.
+TOLD_MARGARET_ABOUT_TOM = "toldMargaretAboutTom"
+HURRIED_ADA = "hurriedAda"
+TOLD_TOM_OF_NELL = "toldTomOfNell"
+
 
 def sam(game):
     meta = game.meta
@@ -96,6 +102,37 @@ def gilbert(game):
 def margaret(game):
     meta = game.meta
 
+    def theOtherLedgers():
+        game.learn(facts.OTHER_BOATS)
+        return (
+            "Other boats? There are always other boats. (She brings down three "
+            "more ledgers and opens them at the ribbons.) The Kestrel, '91. "
+            "The Two Sisters, '02. The Provider, '19. Every one of them: "
+            "'bell rung', in my father's hand, and his father's. It's the "
+            "Marigold's page and no other that says what it says."
+        )
+
+    def undecidedAboutTom():
+        return (
+            meta.knows(facts.MARIGOLD)
+            and TOLD_MARGARET_ABOUT_TOM not in game.loop.flags
+        )
+
+    def tomShouldSee():
+        game.loop.flags[TOLD_MARGARET_ABOUT_TOM] = True
+        return (
+            "(She keeps her hand on the closed ledger a long while.) Thirty "
+            "years, and he has never once asked. ... Perhaps he should. I'll "
+            "take it across at closing."
+        )
+
+    def nothingToDoWithTom():
+        game.loop.flags[TOLD_MARGARET_ABOUT_TOM] = False
+        return (
+            "No. I suppose it isn't. (She puts the ledger back where it has "
+            "been for thirty years.)"
+        )
+
     def theLedger():
         game.learn(facts.MARIGOLD)
         return (
@@ -121,6 +158,24 @@ def margaret(game):
                 "response": theLedger,
                 "condition": lambda: meta.knows(facts.SAM_BELL)
                 or meta.knows(facts.GILBERT_LEDGERS),
+            },
+            {
+                "question": "Were there other boats?",
+                "response": theOtherLedgers,
+                "condition": lambda: meta.knows(facts.MARIGOLD),
+            },
+            # A choice, not a question: two alternatives that settle the same
+            # flag for the day. Telling her sends her across the road at
+            # closing, and Tom has a line for it tonight.
+            {
+                "question": "Tom should see that page.",
+                "response": tomShouldSee,
+                "condition": undecidedAboutTom,
+            },
+            {
+                "question": "That page is nothing to do with Tom now.",
+                "response": nothingToDoWithTom,
+                "condition": undecidedAboutTom,
             },
         ],
     )
@@ -152,6 +207,33 @@ def oldTom(game):
             "them. Somebody should have."
         )
 
+    def undecidedAboutNell():
+        return (
+            meta.knows(facts.THE_HANDS)
+            and (game.loop.has(ROPE) or game.loop.flags.get(ROPE_HUNG))
+            and TOLD_TOM_OF_NELL not in game.loop.flags
+        )
+
+    def nellsStone():
+        game.loop.flags[TOLD_TOM_OF_NELL] = True
+        return (
+            "(Nothing, for a long time. Then:) Hesketh keeps the moss off it. "
+            "I know he does. I've never... Go on. Ring it for her."
+        )
+
+    def leaveTheDead():
+        game.loop.flags[TOLD_TOM_OF_NELL] = False
+        return "(He nods at the door.) Weather's coming. Go on."
+
+    def margaretCameBy():
+        return (
+            "She did. Closing time, with her coat on, which she never does. "
+            "Said someone had been reading. Thirty years that page has sat in "
+            "her father's book and she never once brought it across the road. "
+            "(He looks at you for the first time.) Well. You've read it. Then "
+            "you'd best say the name."
+        )
+
     return NPC(
         "Old Tom",
         "Old Tom keeps the tavern. He was a fisherman once, and does not "
@@ -163,12 +245,109 @@ def oldTom(game):
                 "ale as always.)",
             },
             {
+                "question": "Margaret came by, I think.",
+                "response": margaretCameBy,
+                "condition": lambda: bool(game.loop.flags.get(TOLD_MARGARET_ABOUT_TOM)),
+            },
+            {
                 "question": "You were a fisherman?",
                 "response": "Was. Don't ask me about it.",
             },
             {
                 "question": "I know about the Marigold.",
                 "response": theMarigold,
+                "condition": lambda: meta.knows(facts.MARIGOLD),
+            },
+            # With the rope over your shoulder and her name in your journal:
+            # a choice he holds you to until the bell. Telling him changes
+            # what he is doing when it rings.
+            {
+                "question": "I found Nell's stone.",
+                "response": nellsStone,
+                "condition": undecidedAboutNell,
+            },
+            {
+                "question": "(Leave the dead alone.)",
+                "response": leaveTheDead,
+                "condition": undecidedAboutNell,
+            },
+        ],
+    )
+
+
+def ada(game):
+    """The lighthouse keeper. On the docks at dawn, in the lamp room after.
+
+    Her story is the one line in the village that costs patience rather than
+    knowledge: the lighthouse scene offers the choice, and a player who
+    hurries her gets the short answer and nothing in the journal - until
+    the bell forgets she was hurried."""
+    meta = game.meta
+
+    def theNight():
+        if game.loop.flags.get(HURRIED_ADA):
+            return (
+                "No. Nobody rang anything. I told you. (She turns back to the "
+                "lamp, and that is the end of it for today.)"
+            )
+        game.learn(facts.KEEPER_SAW)
+        return (
+            "You know the name, so I'll tell it once. I was in the lamp room. "
+            "The glass was going white with the spray and I swung that lamp "
+            "till my arms went, and I could see the whole front from up here, "
+            "every window. Nobody came out to the tower. Nobody rang "
+            "anything. Two of them went in off her bow and I watched it and "
+            "there was not a thing I could do but keep the lamp going."
+        )
+
+    return NPC(
+        "Ada",
+        "Ada keeps the light on the point. She has kept it a long time.",
+        [
+            {
+                "question": "Long night?",
+                "response": "Every one of them. The lamp doesn't mind the "
+                "weather and neither do I, much.",
+            },
+            {
+                "question": "What do you see from up there?",
+                "response": "Everything. That's the trouble with a lamp room. "
+                "You see everything and you can do nothing about any of it.",
+            },
+            {
+                "question": "You'd have seen the Marigold go down.",
+                "response": theNight,
+                "condition": lambda: meta.knows(facts.MARIGOLD),
+            },
+        ],
+    )
+
+
+def hesketh(game):
+    """The sexton. The churchyard says nothing until you know a name."""
+    meta = game.meta
+
+    def theStones():
+        game.learn(facts.THE_HANDS)
+        return (
+            "By the wall, the two with the anchors cut in. Harry Blythe, mate. "
+            "Nell Reade, deckhand - nineteen, she was. (He waits for you to "
+            "hear it.) Reade. Aye. Tom's girl. He's not stood at that wall in "
+            "thirty years, and I keep the moss off it for him."
+        )
+
+    return NPC(
+        "Hesketh",
+        "Hesketh is the sexton. He knows where everyone in the village is, "
+        "including the ones who have stopped moving.",
+        [
+            {
+                "question": "Quiet up here.",
+                "response": "It is. That's rather the idea.",
+            },
+            {
+                "question": "I'm looking for the Marigold's crew.",
+                "response": theStones,
                 "condition": lambda: meta.knows(facts.MARIGOLD),
             },
         ],

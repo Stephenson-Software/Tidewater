@@ -62,5 +62,11 @@ pip install pytest pytest-cov -r requirements.txt
 `tests/test_game.py` plays the whole solution through a scripted front-end; if a menu label moves or a gate breaks, that test says which.
 
 ## License
+This project is licensed under the **Stephenson Software Non-Commercial License (Stephenson-NC)**.  
+© 2026 Daniel McCoy Stephenson. All rights reserved.  
 
-[Stephenson-NC](LICENSE) — non-commercial use.
+You may use, modify, and share this software for **non-commercial purposes only**.  
+Commercial use is prohibited without explicit written permission from the copyright holder.  
+
+Full license text: [Stephenson-NC License](https://github.com/Stephenson-Software/stephenson-nc-license) (also in [LICENSE](LICENSE))  
+SPDX Identifier: `Stephenson-NC`

@@ -1,10 +1,12 @@
 import os
 
 # Usage reporting (see usageReporting.py). The key is the program key the
-# trace service issued to Tidewater; it identifies the program, not the
-# player. Empty until one is minted - an empty key leaves reporting off.
+# trace service issued to Tidewater (program 55); it identifies the program,
+# not the player, and is bundled so an install that never sets
+# TIDEWATER_USAGE_REPORTING_KEY still reports. Keys ship in public source by
+# design: they are identity and revocation, not secrecy.
 USAGE_REPORTING_ENDPOINT_DEFAULT = "https://trace.danielstephenson.dev"
-USAGE_REPORTING_KEY_DEFAULT = ""
+USAGE_REPORTING_KEY_DEFAULT = "G3XwvcVo0dbokS5Z1SwI6ETtf37cBhPfB5MeIp_TsYI"
 
 # Values that switch a TIDEWATER_* boolean off. Anything else - including
 # unset and empty - leaves the default in place, matching TIDEWATER_SAVE_DIR.

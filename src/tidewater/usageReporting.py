@@ -1,9 +1,8 @@
 # @author Daniel McCoy Stephenson
 """Usage reporting: tell the trace service that Tidewater was started.
 
-When a program key is configured (config.Config - it is empty until one is
-issued), Tidewater reports two events to https://trace.danielstephenson.dev
-through the vendored trace client (tidewater/trace_client.py): ``startup`` once per launch and
+Tidewater reports two events to https://trace.danielstephenson.dev through
+the vendored trace client (tidewater/trace_client.py): ``startup`` once per launch and
 ``save-loaded`` each time a save slot is created or opened. Each carries the
 program name and the version from version.txt, and nothing else - no username,
 hostname, address, path, slot number or anything about the run.

@@ -50,7 +50,7 @@ Numbered slots under `data/` (or `TIDEWATER_SAVE_DIR`), one `save.json` each, va
 
 ## Usage reporting
 
-The code is wired to report one `startup` event and one `save-loaded` event (program name and version only) to `trace.danielstephenson.dev`, but the program key in `src/tidewater/config.py` is empty, so nothing is sent until one is issued. When it is: `TIDEWATER_USAGE_REPORTING_ENABLED=false`, `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turns it off, the browser build never reports, and what is collected and why is written up in the [trace client's README](https://github.com/Stephenson-Software/trace-client-python#turning-it-off).
+Tidewater reports one `startup` event and one `save-loaded` event (program name and version only) to `trace.danielstephenson.dev`, on by default, and prints a one-line notice the first time an install does so. `TIDEWATER_USAGE_REPORTING_ENABLED=false`, `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turns it off, the browser build never reports, and what is collected and why is written up in the [trace client's README](https://github.com/Stephenson-Software/trace-client-python#turning-it-off).
 
 ## Development
 

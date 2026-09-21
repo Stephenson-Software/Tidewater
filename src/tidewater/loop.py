@@ -59,10 +59,33 @@ def timetable(meta):
         (TAVERN_OPEN, "Old Tom opens the tavern."),
     ]
     if meta.knows(facts.THE_STORM):
-        rows.append((STORM_HOUR, "The storm comes in. The docks are cut off."))
+        rows.append(
+            (
+                STORM_HOUR,
+                _witnessed(
+                    "The storm comes in. The docks are cut off.", meta, facts.THE_STORM
+                ),
+            )
+        )
     if meta.knows(facts.THE_BELL):
-        rows.append((BELL_HOUR, "The bell rings. The day begins again."))
+        rows.append(
+            (
+                BELL_HOUR,
+                _witnessed(
+                    "The bell rings. The day begins again.", meta, facts.THE_BELL
+                ),
+            )
+        )
     return sorted(rows)
+
+
+def _witnessed(line, meta, factId):
+    """A timetable row the player lived through rather than was told, marked
+    with the loop it happened in - the common-knowledge rows carry no mark."""
+    loop = meta.learnedIn(factId)
+    if loop is None:
+        return line
+    return "%s (witnessed, loop %d)" % (line, loop)
 
 
 class Outcome:
@@ -115,8 +138,10 @@ def _endDay(game, outcome):
         return
 
     learned = list(loop.newFacts)
-    meta.loops += 1
+    # Learned before the count moves on: the bell was heard at the end of
+    # *this* loop, and the journal records it there.
     firstReset = game.learn(facts.THE_BELL)
+    meta.loops += 1
     outcome.lines.append(
         "Eleven o'clock. Out on the water the harbour bell rings - once, "
         "clear and cold - and the sound goes through you like a tide going out."

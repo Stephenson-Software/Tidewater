@@ -33,6 +33,11 @@ class MetaState:
     def __init__(self):
         self.loops = 1
         self.facts = []
+        # The loop each fact was learned in, by fact id. The only history the
+        # model keeps: it is knowledge about knowledge, so it survives the
+        # reset like the facts themselves. Absent for facts from saves that
+        # predate it.
+        self.factLoops = {}
         self.unlocked = []
         self.endings = []
         # Once the bell has been rung the day ends like any other: this
@@ -50,12 +55,18 @@ class MetaState:
         if factId in self.facts:
             return False
         self.facts.append(factId)
+        self.factLoops[factId] = self.loops
         return True
+
+    def learnedIn(self, factId):
+        """The loop a fact was learned in, or None if not known or not recorded."""
+        return self.factLoops.get(factId)
 
     def toDict(self):
         return {
             "loops": self.loops,
             "facts": list(self.facts),
+            "factLoops": dict(self.factLoops),
             "unlocked": list(self.unlocked),
             "endings": list(self.endings),
             "loopBroken": self.loopBroken,
@@ -67,6 +78,9 @@ class MetaState:
         meta = cls()
         meta.loops = data["loops"]
         meta.facts = [f for f in data.get("facts", []) if f in facts.FACTS]
+        meta.factLoops = {
+            f: int(n) for f, n in data.get("factLoops", {}).items() if f in meta.facts
+        }
         meta.unlocked = list(data.get("unlocked", []))
         meta.endings = list(data.get("endings", []))
         meta.loopBroken = data.get("loopBroken", False)

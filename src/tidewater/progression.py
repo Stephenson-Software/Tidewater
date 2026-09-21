@@ -10,6 +10,7 @@ from tidewater import facts
 
 JOURNAL = "journal"
 RESOLVE = "resolve"
+THE_OTHER_WAY = "the_other_way"
 
 UNLOCKS = [
     {
@@ -27,6 +28,14 @@ UNLOCKS = [
         "rope is. Margaret's ledger, Tom's cellar, the tower before nine. It "
         "could all be done in one day.",
         "condition": lambda meta: meta.knows(facts.THE_ROPE),
+    },
+    {
+        "id": THE_OTHER_WAY,
+        "name": "the other way",
+        "announcement": "The lamp went out at nine, and the shop opens at "
+        "eight. A can of oil is a small thing to carry up a path. It could "
+        "be done before the weather.",
+        "condition": lambda meta: meta.knows(facts.THE_OIL),
     },
 ]
 

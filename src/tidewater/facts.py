@@ -23,6 +23,10 @@ LOOP_BROKEN = "loop_broken"
 KEEPER_SAW = "keeper_saw"
 OTHER_BOATS = "other_boats"
 THE_HANDS = "the_hands"
+THE_OIL = "the_oil"
+THE_LIGHT_HELD = "the_light_held"
+THE_OIL = "the_oil"
+THE_LIGHT_HELD = "the_light_held"
 
 FACTS = {
     THE_BELL: {
@@ -124,6 +128,11 @@ FACTS = {
                 "text": "Ada saw two go into the water. She won't say their "
                 "names. Someone has cut them in stone.",
             },
+            {
+                "to": THE_OIL,
+                "text": "She swung the lamp till her arms went. She did not "
+                "say how long the lamp lasted. Ask her.",
+            },
         ],
     },
     OTHER_BOATS: {
@@ -146,12 +155,37 @@ FACTS = {
         "Blythe, mate, and Nell Reade, deckhand, lost with the Marigold. "
         "Reade. Tom's name. She was his daughter.",
     },
+    THE_OIL: {
+        "title": "The lamp went out",
+        "text": "Ada kept the lamp going till the oil was gone, and the oil "
+        "was gone by nine: old Gilbert had stopped the point's oil that "
+        "week over a bill, and she had a quarter can. The Marigold came "
+        "round the point in the dark. Gilbert's boy keeps the shop now, "
+        "and the shop still sells lamp oil.",
+        "leads": [
+            {
+                "to": THE_LIGHT_HELD,
+                "text": "The shop opens at eight and the storm comes at nine "
+                "at night. A can of oil, carried up the point, and the lamp "
+                "lit before the weather.",
+            },
+        ],
+    },
+    THE_LIGHT_HELD: {
+        "title": "The night the light held",
+        "text": "You filled the lamp and lit it, and when the storm came in "
+        "at nine the light on the point met it and did not go out. There "
+        "was no bell at eleven. The day ended. The next one was new.",
+    },
 }
 
-# The facts the whole puzzle turns on, in the order they have to be learned.
+# The facts each way out turns on, in the order they have to be learned.
 # The journal marks these so a player who has learned a few knows how far
-# there is to go without being told what the rest are.
+# there is to go without being told what the rest are. TRAIL is the bell's,
+# the first and the one the village points at hardest; TRAILS has both.
 TRAIL = [THE_BELL, MARIGOLD, THE_ROPE, LOOP_BROKEN]
+TRAIL_LIGHT = [THE_BELL, MARIGOLD, KEEPER_SAW, THE_OIL, THE_LIGHT_HELD]
+TRAILS = {"the bell": TRAIL, "the light": TRAIL_LIGHT}
 
 
 def title(factId):

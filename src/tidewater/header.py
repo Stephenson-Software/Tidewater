@@ -2,7 +2,7 @@
 from tak import formatHour
 
 from tidewater import facts
-from tidewater.loop import stormRaging
+from tidewater.loop import endingName, stormRaging
 
 LOCATION_NAMES = {
     "docks": "The Docks",
@@ -14,7 +14,7 @@ LOCATION_NAMES = {
     "churchyard": "The Churchyard",
 }
 
-ITEM_NAMES = {"rope": "the bell rope"}
+ITEM_NAMES = {"rope": "the bell rope", "oil": "a can of lamp oil"}
 
 
 def buildHeader(game):
@@ -22,7 +22,7 @@ def buildHeader(game):
     hour, where the player is, what they carry, how much they know."""
     meta, loop = game.meta, game.loop
     if meta.loopBroken:
-        first = "Day %d after the bell" % (meta.days + 1)
+        first = "Day %d after %s" % (meta.days + 1, endingName(meta))
     else:
         first = "Loop %d" % meta.loops
     chips = [first, formatHour(loop.hour), LOCATION_NAMES.get(loop.location, "")]

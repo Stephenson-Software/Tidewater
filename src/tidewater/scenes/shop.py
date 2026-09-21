@@ -34,7 +34,7 @@ class Shop(Scene):
         if kind == "quit":
             return "quit"
         if kind == "gilbert":
-            self.ui.showInteractiveDialogue(villagers.gilbert(self.game))
+            self.talk(villagers.gilbert(self.game), villagers.SHAMED_GILBERT)
         elif kind == "browse":
             self.ui.showDialogue(
                 "Rope by the fathom, hooks by the dozen, a barrel of salt. "

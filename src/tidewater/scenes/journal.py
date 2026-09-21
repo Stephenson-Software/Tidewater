@@ -25,16 +25,19 @@ class Journal(Scene):
         return self.go("home")
 
     def descriptor(self):
-        onTrail = sum(1 for f in facts.TRAIL if self.meta.knows(f))
         loops = "Loop %d." % self.meta.loops
         if self.meta.loopBroken:
             loops = "The loop is broken. %d loops it took." % self.meta.loops
-        return "%s %d of %d things known. %d of %d on the trail of the bell." % (
+        trails = "; ".join(
+            "%d of %d on the trail of %s"
+            % (sum(1 for f in trail if self.meta.knows(f)), len(trail), name)
+            for name, trail in facts.TRAILS.items()
+        )
+        return "%s %d of %d things known. %s." % (
             loops,
             len(self.meta.facts),
             len(facts.FACTS),
-            onTrail,
-            len(facts.TRAIL),
+            trails,
         )
 
     def knownText(self):
@@ -43,14 +46,14 @@ class Journal(Scene):
         lines = []
         for factId in facts.FACTS:  # registry order, not learning order
             if self.meta.knows(factId):
-                marker = "*" if factId in facts.TRAIL else "-"
+                marker = "*" if any(factId in t for t in facts.TRAILS.values()) else "-"
                 loop = self.meta.learnedIn(factId)
                 when = "" if loop is None else " - loop %d" % loop
                 lines.append(
                     "%s %s%s\n  %s"
                     % (marker, facts.title(factId), when, facts.text(factId))
                 )
-        lines.append("\n(* marks the trail of the bell.)")
+        lines.append("\n(* marks the trail of the bell, or of the light.)")
         return "\n\n".join(lines)
 
     def leadsText(self):

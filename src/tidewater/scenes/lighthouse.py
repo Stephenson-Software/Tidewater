@@ -83,18 +83,6 @@ class Lighthouse(Scene):
             )
         elif kind == "waitForStorm":
             return self.afterHours(max(1, STORM_HOUR - self.loop.hour))
-        elif kind == "light":
-            self.loop.items.remove(villagers.OIL)
-            self.loop.flags[LAMP_LIT] = True
-            self.ui.showDialogue(
-                "Ada shows you the filler and stands back. The oil goes in "
-                "clear and the wick takes on the second match, and the lens "
-                "turns it into a bar of light that goes out over the water "
-                "and comes round again. It is the middle of the day. Nobody "
-                "on the front looks up. Ada does not look away."
-            )
-        elif kind == "waitForStorm":
-            return self.afterHours(max(1, STORM_HOUR - self.loop.hour))
         elif kind == "look":
             self.ui.showDialogue(
                 "From here you can see the bell tower at the end of the pier, "

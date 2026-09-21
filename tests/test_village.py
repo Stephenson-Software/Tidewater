@@ -85,6 +85,40 @@ def test_the_storm_cuts_off_the_lighthouse_as_well_as_the_docks():
     assert reasons[docks] and "docks" in reasons[docks]
 
 
+def test_the_docks_say_again_once_the_bell_is_known_not_once_the_counter_moves():
+    from tidewater.scenes.docks import Docks
+
+    game = FakeGame()
+    docks = Docks(game)
+    assert "whole sea in front of you" in docks.descriptor()
+    # The counter alone is not what the line reads: a save whose loop count
+    # moved without the bell being kept still wakes to the first morning.
+    game.meta.loops = 3
+    assert "whole sea in front of you" in docks.descriptor()
+    # And knowing the bell is enough on its own, whatever the counter says.
+    game.meta.loops = 1
+    game.learn(facts.THE_BELL)
+    assert docks.descriptor() == "The docks, eight in the morning. Again."
+
+
+def test_no_scene_or_villager_compares_the_loop_counter():
+    import glob
+    import os
+    import re
+
+    # What opens a door or picks a line is knowledge (meta.knows) or the day
+    # (loop.*), never how many times the day has come round. The counter is
+    # shown - the header, the journal's "Loop N." - but not compared.
+    root = os.path.join(os.path.dirname(__file__), "..", "src", "tidewater")
+    paths = glob.glob(os.path.join(root, "scenes", "*.py")) + [
+        os.path.join(root, "villagers.py")
+    ]
+    for path in paths:
+        source = open(path).read()
+        compared = re.findall(r"meta\.loops\s*(?:==|!=|<|>|<=|>=)", source)
+        assert not compared, (os.path.basename(path), compared)
+
+
 # --- the new villagers ------------------------------------------------------
 
 

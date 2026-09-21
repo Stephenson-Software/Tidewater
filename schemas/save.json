@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Tidewater save",
+    "type": "object",
+    "required": ["version", "meta", "loop"],
+    "properties": {
+        "version": { "type": "integer", "minimum": 1 },
+        "meta": {
+            "type": "object",
+            "required": ["loops", "facts"],
+            "properties": {
+                "loops": { "type": "integer", "minimum": 1 },
+                "facts": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+                "unlocked": { "type": "array", "items": { "type": "string" } },
+                "endings": { "type": "array", "items": { "type": "string" } },
+                "loopBroken": { "type": "boolean" },
+                "days": { "type": "integer", "minimum": 0 }
+            }
+        },
+        "loop": {
+            "type": "object",
+            "required": ["hour"],
+            "properties": {
+                "hour": { "type": "integer", "minimum": 0, "maximum": 23 },
+                "location": { "type": "string" },
+                "items": { "type": "array", "items": { "type": "string" } },
+                "flags": { "type": "object" },
+                "newFacts": { "type": "array", "items": { "type": "string" } },
+                "rngDraws": { "type": "integer", "minimum": 0 }
+            }
+        }
+    }
+}

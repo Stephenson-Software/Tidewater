@@ -1,5 +1,5 @@
 # @author Daniel McCoy Stephenson
-"""The four villagers, and what they will say to someone who knows enough.
+"""The villagers, and what they will say to someone who knows enough.
 
 Every conditional line is gated on a fact, never on the loop number: what
 opens a door in Tidewater is what you know, and you can know it in any loop.
@@ -9,17 +9,20 @@ the line is heard and not when the menu is built.
 
 from tak import NPC
 
-from tidewater.loop import ROPE_HUNG
-
 from tidewater import facts
+from tidewater.flags import (
+    HURRIED_ADA,
+    LAMP_LIT,
+    ROPE_HUNG,
+    SHAMED_GILBERT,
+    TOLD_MARGARET_ABOUT_TOM,
+    TOLD_TOM_OF_NELL,
+)
 
+# What a villager can put in your hands for the day. Loop items: the bell
+# forgets them along with everything else you did.
 ROPE = "rope"
-
-# Choices people hold you to for the day - see Scene.remember. Loop flags,
-# so the bell forgets them.
-TOLD_MARGARET_ABOUT_TOM = "toldMargaretAboutTom"
-HURRIED_ADA = "hurriedAda"
-TOLD_TOM_OF_NELL = "toldTomOfNell"
+OIL = "oil"
 
 
 def sam(game):
@@ -79,6 +82,43 @@ def gilbert(game):
             "back before either of us."
         )
 
+    def undecidedAboutTheOil():
+        return (
+            meta.knows(facts.THE_OIL)
+            and not game.loop.has(OIL)
+            and not game.loop.flags.get(LAMP_LIT)
+            and SHAMED_GILBERT not in game.loop.flags
+        )
+
+    def hisFathersBill():
+        game.loop.flags[SHAMED_GILBERT] = True
+        game.loop.items.append(OIL)
+        return (
+            "(He does not answer for a while. When he does it is to the "
+            "shelf behind him, not to you.) That's a thing she's never said "
+            "to me in thirty years. ... Take it. (A can, full, set on the "
+            "counter hard enough to slop.) On the house. And you can tell "
+            "her that. Now get out of my shop for today."
+        )
+
+    def whateverIsOwed():
+        game.loop.flags[SHAMED_GILBERT] = False
+        game.loop.items.append(OIL)
+        return (
+            "(He looks at you, and then out of the window at the point, for "
+            "longer than a shopkeeper looks at anything.) Aye. Whatever's "
+            "owed. (He fills a can from the barrel himself and wipes it "
+            "down before he hands it over.) There's a storm coming tonight, "
+            "they say. There always is. Mind how you go up that path."
+        )
+
+    def alreadyHasOil():
+        if game.loop.flags.get(LAMP_LIT):
+            return (
+                "It's lit? (He goes to the door and looks up at the point.) So it is."
+            )
+        return "You've got the can. Go on up before the weather turns."
+
     return NPC(
         "Gilbert",
         "Gilbert keeps the shop, and the village's gossip along with it.",
@@ -94,6 +134,25 @@ def gilbert(game):
                 "question": "Does the harbour bell ever ring?",
                 "response": "Not in my lifetime. Ask Sam, he's down there all day.",
                 "condition": lambda: meta.knows(facts.THE_BELL),
+            },
+            # A choice, not a question: two ways to ask for the oil, and he
+            # gives it either way - what differs is what he does with the
+            # rest of his day, and what he is doing when the light holds.
+            {
+                "question": "It was your father's bill that put the lamp out.",
+                "response": hisFathersBill,
+                "condition": undecidedAboutTheOil,
+            },
+            {
+                "question": "The lamp needs oil tonight, whatever's owed.",
+                "response": whateverIsOwed,
+                "condition": undecidedAboutTheOil,
+            },
+            {
+                "question": "About the oil.",
+                "response": alreadyHasOil,
+                "condition": lambda: game.loop.has(OIL)
+                or bool(game.loop.flags.get(LAMP_LIT)),
             },
         ],
     )
@@ -300,6 +359,29 @@ def ada(game):
             "there was not a thing I could do but keep the lamp going."
         )
 
+    def howLongItHeld():
+        game.learn(facts.THE_OIL)
+        return (
+            "(She does not stop polishing.) Till nine. It held till nine and "
+            "then the oil was done, and I had nothing to feed it. Old Gilbert "
+            "had stopped the point's oil that week - a bill, he said, my "
+            "father's bill - and I'd a quarter can to my name. I swung it "
+            "dry. She came round the point in the dark. (She sets the cloth "
+            "down.) His boy keeps the shop now. Never once has he asked me "
+            "why I don't buy my oil from him."
+        )
+
+    def theLampTonight():
+        if game.loop.flags.get(LAMP_LIT):
+            return (
+                "(She looks at the lamp, and at you, and says nothing for a "
+                "long time.) Then we'll see what nine o'clock makes of it."
+            )
+        return (
+            "Bring it up and I'll show you the filler. Before nine, mind. "
+            "After nine there's no getting up the path, and no point."
+        )
+
     return NPC(
         "Ada",
         "Ada keeps the light on the point. She has kept it a long time.",
@@ -318,6 +400,18 @@ def ada(game):
                 "question": "You'd have seen the Marigold go down.",
                 "response": theNight,
                 "condition": lambda: meta.knows(facts.MARIGOLD),
+            },
+            {
+                "question": "How long did the lamp hold, that night?",
+                "response": howLongItHeld,
+                "condition": lambda: meta.knows(facts.KEEPER_SAW)
+                and not game.loop.flags.get(HURRIED_ADA),
+            },
+            {
+                "question": "I've a can of oil for the lamp.",
+                "response": theLampTonight,
+                "condition": lambda: game.loop.has(OIL)
+                or bool(game.loop.flags.get(LAMP_LIT)),
             },
         ],
     )

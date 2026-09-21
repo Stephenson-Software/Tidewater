@@ -1,16 +1,18 @@
 # @author Daniel McCoy Stephenson
-"""The clock, the day's timetable, and the reset.
+"""The clock, the day's timetable, the endings, and the reset.
 
 Every action a scene offers costs an hour and goes through advance(). The
 timetable is fixed - it is the same day every time - and two of its entries
 are the whole game: the storm at nine, after which the docks can't be
-reached, and the bell at eleven, which ends the day. What the bell does when
-it rings depends on whether the rope is hanging.
+reached, and the bell at eleven, which ends the day. What an hour does when
+it comes depends on what the player has done to the village by then: the
+ENDINGS table below is the whole of that, one row per way out of the loop,
+and the clock consults it rather than any scene deciding for itself.
 """
 
 from tak import formatHour
 
-from tidewater import facts
+from tidewater import facts, flags
 from tidewater.state import LoopState
 
 STORM_HOUR = 21
@@ -26,8 +28,24 @@ SAM_LEAVES = 17
 # nine; the lamp room is hers until the storm shuts the pier.
 KEEPER_LEAVES_DOCKS = 9
 
-ROPE_HUNG = "ropeHung"
+# Kept importable from here; the flag itself lives in tidewater.flags.
+ROPE_HUNG = flags.ROPE_HUNG
+LAMP_LIT = flags.LAMP_LIT
+
 ENDING_BELL = "bell"
+ENDING_LIGHT = "light"
+
+# What each ending is called the morning after, in the header and the day
+# report: "Day 3 after the bell", "the 2nd since the light".
+ENDING_NAMES = {ENDING_BELL: "the bell", ENDING_LIGHT: "the light"}
+
+
+def endingName(meta):
+    """What broke the loop, for the morning after. A save that says the loop
+    is broken but records no ending predates the second one: it was the bell."""
+    if not meta.endings:
+        return ENDING_NAMES[ENDING_BELL]
+    return ENDING_NAMES[meta.endings[-1]]
 
 
 def bankOpen(hour):
@@ -116,7 +134,12 @@ class Outcome:
 
 
 def advance(game, hours=1):
-    """Move the clock, firing whatever the timetable has for each hour."""
+    """Move the clock, firing whatever the timetable has for each hour.
+
+    Each hour is checked against ENDINGS first: an ending whose hour this is
+    and whose flag the player has set fires, ends the day, and nothing later
+    in the hour (or the day) runs. Then the storm, then - at the bell hour -
+    the ordinary reset."""
     outcome = Outcome()
     for _ in range(hours):
         game.loop.hour += 1
@@ -130,22 +153,48 @@ def advance(game, hours=1):
                 outcome.lines.append(
                     "[You've learned something. It's in your journal.]"
                 )
+        ending = _endingDue(game, hour)
+        if ending is not None:
+            ending.handler(game, outcome)
+            return outcome
         if hour >= BELL_HOUR:
             _endDay(game, outcome)
             return outcome
     return outcome
 
 
+class Ending:
+    """One way out of the loop: at ``hour``, if ``flag`` is set on the loop,
+    ``handler`` breaks the loop and records ``id`` on MetaState.endings."""
+
+    def __init__(self, hour, flag, id, handler):
+        self.hour = hour
+        self.flag = flag
+        self.id = id
+        self.handler = handler
+
+
+def _endingDue(game, hour):
+    """The ending that fires this hour, or None. Earliest hour wins, so a
+    player who has both lit the lamp and hung the rope breaks the loop at
+    nine with the light and never reaches the bell. Once the loop is broken
+    the endings are history and the days are ordinary."""
+    if game.meta.loopBroken:
+        return None
+    for ending in ENDINGS:
+        if ending.hour == hour and game.loop.flags.get(ending.flag):
+            return ending
+    return None
+
+
 def _endDay(game, outcome):
     meta, loop = game.meta, game.loop
-    if loop.flags.get(ROPE_HUNG) and not meta.loopBroken:
-        _ringForTheMarigold(game, outcome)
-        return
     if meta.loopBroken:
         meta.days += 1
         outcome.lines.append(
             "Night falls, and for once it stays fallen. You sleep. Morning "
-            "comes - an ordinary one, the %s since the bell." % _ordinal(meta.days)
+            "comes - an ordinary one, the %s since %s."
+            % (_ordinal(meta.days), endingName(meta))
         )
         outcome.reset = True
         _newDay(game)
@@ -191,7 +240,7 @@ def _ringForTheMarigold(game, outcome):
         "should have rung thirty years ago, out over the water where the "
         "Marigold went down."
     )
-    if game.loop.flags.get("toldTomOfNell"):
+    if game.loop.flags.get(flags.TOLD_TOM_OF_NELL):
         outcome.lines.append(
             "Lights come on along the front. Old Tom is standing at the tavern "
             "door with his hat off, and he is saying something over and over "
@@ -209,6 +258,52 @@ def _ringForTheMarigold(game, outcome):
     outcome.lines.append("You have broken the loop. Loop %d was the last." % meta.loops)
     outcome.reset = True
     _newDay(game)
+
+
+def _holdTheLight(game, outcome):
+    """Nine o'clock with the lamp burning: the second way out."""
+    meta = game.meta
+    meta.loopBroken = True
+    meta.endings.append(ENDING_LIGHT)
+    game.learn(facts.THE_LIGHT_HELD)
+    outcome.ending = ENDING_LIGHT
+    outcome.lines.append(
+        "Nine o'clock. The storm comes in off the water the way it has come "
+        "in every night, and this time there is a light on the point to meet "
+        "it. The glass goes white with spray and the lamp burns behind it, "
+        "and burns, and does not go out."
+    )
+    if game.loop.flags.get(flags.SHAMED_GILBERT):
+        outcome.lines.append(
+            "Along the front the shutters are up against the weather, all but "
+            "one: Gilbert is standing in his doorway in the rain, looking out "
+            "at the point, and does not go in until the beam has swung round "
+            "three times. Above him, in the lamp room, Ada has stopped "
+            "polishing the lens and is only watching it turn."
+        )
+    else:
+        outcome.lines.append(
+            "Along the front the shutters are up against the weather. Up in "
+            "the lamp room Ada has stopped polishing the lens and is only "
+            "watching the beam go round, out over the water where the "
+            "Marigold went down, and round again."
+        )
+    outcome.lines.append(
+        "There is no bell at eleven. There is nothing at eleven but the rain "
+        "easing, and then the morning, and the morning is new."
+    )
+    outcome.lines.append("You have broken the loop. Loop %d was the last." % meta.loops)
+    outcome.reset = True
+    _newDay(game)
+
+
+# The ways out, in the order the clock meets them. Adding an ending is a row
+# here, a flag in tidewater.flags, and a handler above - never an `if` in a
+# scene.
+ENDINGS = (
+    Ending(STORM_HOUR, flags.LAMP_LIT, ENDING_LIGHT, _holdTheLight),
+    Ending(BELL_HOUR, flags.ROPE_HUNG, ENDING_BELL, _ringForTheMarigold),
+)
 
 
 def _newDay(game):

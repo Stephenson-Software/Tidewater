@@ -2,7 +2,8 @@
 from tak import formatHour
 
 from tidewater import facts, villagers
-from tidewater.loop import BELL_HOUR, ROPE_HUNG, keeperAtDocks, samAtDocks, stormRaging
+from tidewater.flags import ROPE_HUNG
+from tidewater.loop import BELL_HOUR, keeperAtDocks, samAtDocks, stormRaging
 from tidewater.scenes.base import Scene
 
 CATCHES = [

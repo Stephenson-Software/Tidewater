@@ -8,7 +8,7 @@ from tidewater.scenes.base import Scene
 
 class Tavern(Scene):
     id = "tavern"
-    travelTo = ("docks", "shop", "home", "bank")
+    travelTo = ("docks", "shop", "home", "bank", "lighthouse", "churchyard")
 
     def descriptor(self):
         if tavernOpen(self.loop.hour):
@@ -32,7 +32,7 @@ class Tavern(Scene):
         if kind == "quit":
             return "quit"
         if kind == "tom":
-            self.ui.showInteractiveDialogue(villagers.oldTom(self.game))
+            self.talk(villagers.oldTom(self.game), villagers.TOLD_TOM_OF_NELL)
         elif kind == "drink":
             self.ui.showDialogue(
                 "You sit by the fire. The talk is of weather and prices. Nobody "

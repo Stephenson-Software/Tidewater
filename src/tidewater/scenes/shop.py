@@ -8,7 +8,7 @@ from tidewater.scenes.base import Scene
 
 class Shop(Scene):
     id = "shop"
-    travelTo = ("docks", "home", "tavern", "bank")
+    travelTo = ("docks", "home", "tavern", "bank", "lighthouse", "churchyard")
 
     def descriptor(self):
         if shopOpen(self.loop.hour):

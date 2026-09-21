@@ -31,6 +31,10 @@ pip install -r requirements.txt
 
 **Docker:** `docker build -t tidewater . && docker run -p 8080:8080 tidewater` serves the browser build.
 
+## The story
+
+A stranger, a village, one repeating day, and a thirty-year-old night nobody finished. The game tells it in pieces; the journal's "What is happening to you" page assembles the pieces you have found, in plain words. The whole of it, spoilers included, is in [docs/STORY.md](docs/STORY.md).
+
 ## How it works
 
 The day is fifteen hours long and every action costs one. Seven places — the docks, Gilbert's shop, home, the tavern, the bank, the lighthouse on the point, the churchyard above the village — and six villagers who keep hours. Talk to people. Some of what they say is a **fact**, and facts survive the night: they appear in your journal and they open new questions on other villagers' menus. Facts also point at each other, Outer Wilds fashion: under each one the journal lists where it leads that you haven't been, without ever naming what is there. There are fifteen facts and two ways out — and a third way that is both. The trail to the bell is four facts long; the trail to the light — the lamp on the point, which went dark the night the Marigold was lost, and can be made to hold through the storm at nine — is five. Either can be walked in a single day once you know the way, and neither can be walked in the first. Each ending answers the questions the village has been refusing to: who cut the rope, and why a bell with no rope rings at eleven — Ada tells you in the lamp room, or Tom tells you in the tower. Each also tells you, plainly, that only half of that old night is mended. Do both in one day — the lamp lit before nine, the rope hung, the bell rung at eleven with the beam on the water — and the night is closed for good.

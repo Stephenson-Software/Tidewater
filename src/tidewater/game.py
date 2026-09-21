@@ -19,7 +19,7 @@ from tak.saves import (
 from tak.ui import UIType, createUserInterface
 
 from tidewater import loop as loopEngine
-from tidewater import progression, scenes, usageReporting
+from tidewater import premise, progression, scenes, usageReporting
 from tidewater.config import Config
 from tidewater.header import buildHeader
 from tidewater.state import (
@@ -107,6 +107,10 @@ class Tidewater:
         # A loaded save may predate an unlock, or have earned one since.
         progression.catchUp(self.meta)
         self.scenes = scenes.build(self)
+        # A brand-new game opens on where you are and what day it is, once.
+        self.showOpening = kind == "new" or (
+            self.meta.loops == 1 and not self.meta.facts and self.loop.hour == 8
+        )
 
     # --- the loop's hooks -------------------------------------------------
     def learn(self, factId):
@@ -137,6 +141,9 @@ class Tidewater:
             self.usageReporting.close()
 
     def _runGameLoop(self):
+        if self.showOpening:
+            self.ui.showDialogue(premise.OPENING)
+            self.showOpening = False
         while self.running:
             unlock = progression.getNextUnlock(self.meta)
             if unlock is not None:

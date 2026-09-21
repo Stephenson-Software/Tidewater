@@ -263,12 +263,14 @@ def _whatTomTells(game, outcome, lightHeld):
         "Feet on the tower stairs. Old Tom comes up into the dark with his "
         "hat in his hand and stands looking at the rope a long while before "
         "he says anything. 'I cut it,' he says. 'Not that night. Weeks "
-        "before. Gilbert's father wouldn't give me a fathom on credit and "
-        "the Marigold's mooring was rotten through, so I went up here one "
-        "night and took the bell's. It was aboard her when she went down. "
-        "Holding her to a quay she never reached.' He does not look at you. "
-        "'Nobody could ring for her because the rope was out there with "
-        "her. I came ashore with it. I've had it thirty years.'"
+        "before. My mooring line was rotten and Gilbert's father wouldn't "
+        "sell me rope on credit, so I came up here one night and took the "
+        "bell's, and tied her up with it. It was coiled on her deck when we "
+        "went out.' He does not look at you. 'So when the weather came "
+        "there was nothing on this bell to pull. Nobody ashore could ring "
+        "us in. We couldn't see the point and we couldn't hear the harbour, "
+        "and she struck. I came ashore with the rope. I've had it thirty "
+        "years.'"
     )
     if told:
         outcome.lines.append(
@@ -390,11 +392,12 @@ def _holdTheLight(game, outcome):
         "looking away from it. 'You've been wondering who cut that rope. "
         "Nobody, that night - I told you, I saw the whole front and nobody "
         "went near the tower. It was Tom. Weeks before. Gilbert's father "
-        "wouldn't give him a fathom on credit and the Marigold's mooring was "
-        "rotten, so he went up one night and took the bell's. It was aboard "
-        "her when she went down. Holding her to a quay she never reached. "
-        "Nobody could ring for her because the rope was out there with her. "
-        "He came ashore with it. He's had it thirty years.'"
+        "wouldn't sell him rope on credit and his mooring line was rotten, "
+        "so he went up one night and took the bell's to tie her up with. It "
+        "was on her deck when she went out. So there was nothing on the bell "
+        "to pull that night - nobody ashore could ring her in - and my lamp "
+        "was dark, so she couldn't see the point either. She struck it. He "
+        "came ashore with the rope. He's had it thirty years.'"
     )
     outcome.lines.append(
         "'Every other boat this village lost was lit in from here and called "

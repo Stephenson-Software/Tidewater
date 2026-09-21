@@ -203,6 +203,7 @@ def test_a_saved_game_reloads_where_it_left_off(scripted, tmp_path):
             "Load Slot 1",
             "Go home",
             "Read your journal",
+            "What is happening to you",
             "What you know",
             "Close the journal",
             "Quit",

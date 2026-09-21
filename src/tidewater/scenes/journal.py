@@ -1,7 +1,7 @@
 # @author Daniel McCoy Stephenson
 from tak import formatHour
 
-from tidewater import facts
+from tidewater import facts, premise
 from tidewater.loop import timetable
 from tidewater.scenes.base import Scene
 
@@ -14,12 +14,20 @@ class Journal(Scene):
     travelTo = ()
 
     def run(self):
-        options = ["What you know", "The day, as you know it", "Close the journal"]
+        options = [
+            "What is happening to you",
+            "What you know",
+            "The day, as you know it",
+            "Close the journal",
+        ]
         choice = int(self.ui.showOptions(self.descriptor(), options))
         if choice == 1:
-            self.ui.showDialogue(self.knownText() + self.leadsText())
+            self.ui.showDialogue(premise.text(self.meta))
             return self.id
         if choice == 2:
+            self.ui.showDialogue(self.knownText() + self.leadsText())
+            return self.id
+        if choice == 3:
             self.ui.showDialogue(self.timetableText())
             return self.id
         return self.go("home")

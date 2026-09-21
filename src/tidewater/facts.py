@@ -215,11 +215,12 @@ FACTS = {
     WHO_CUT_THE_ROPE: {
         "title": "Who cut the rope",
         "text": "Nobody cut it that night. Tom cut it weeks before, from the "
-        "bell himself, because old Gilbert would not give him a fathom of "
-        "cordage on credit and the Marigold's mooring line was rotten "
-        "through. The bell rope was aboard the Marigold when she went "
-        "down, holding her to the quay she never reached. He came ashore "
-        "with it. That is why nobody could ring, and why he kept it.",
+        "bell himself: the Marigold's mooring line was rotten, old Gilbert "
+        "would not sell him rope on credit, so he took the bell's and used "
+        "it to tie her up. It was coiled on her deck the night she went "
+        "out. So when the storm came there was no rope on the bell, and "
+        "nobody ashore could ring to guide her in. She struck the point in "
+        "the dark. He came ashore with the rope. That is why he kept it.",
     },
     WHY_IT_RINGS: {
         "title": "Why the bell rings",

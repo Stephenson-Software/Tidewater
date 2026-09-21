@@ -57,3 +57,14 @@ def test_tom_gives_the_rope_once_per_loop_to_someone_who_knows_the_name():
     )
     assert "You've got it" in again
     assert game.loop.items == ["rope"]
+
+
+def test_tom_knows_when_the_rope_is_already_hung():
+    from tidewater.loop import ROPE_HUNG
+
+    game = FakeGame()
+    game.learn(facts.MARIGOLD)
+    game.loop.flags[ROPE_HUNG] = True
+    tom = villagers.oldTom(game)
+    line = tom.get_dialogue_response(questions(tom).index("I know about the Marigold."))
+    assert "hung" in line and game.loop.items == []

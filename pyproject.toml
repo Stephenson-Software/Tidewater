@@ -1,0 +1,10 @@
+[tool.black]
+# src/tidewater/trace_client.py is vendored byte-for-byte from
+# https://github.com/Stephenson-Software/trace-client-python and is kept that
+# way so it stays diffable against upstream. format.sh runs black over src, so
+# it is excluded here rather than reformatted.
+force-exclude = '''
+/(
+    src/tidewater/trace_client\.py
+)$
+'''

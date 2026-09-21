@@ -10,11 +10,13 @@ Tidewater is a time-loop text adventure set in [FishE](https://github.com/Stephe
 
 ## Play
 
+`pip install -r requirements.txt` needs `git` on your PATH: the kit is installed from its GitHub tag.
+
 **In your browser** — the game runs in your tab, saves live in your browser:
 
 ```bash
 pip install -r requirements.txt
-python3 web/build_zip.py     # once, and after any src/ change
+python3 web/build_zip.py     # once, and after any src/ change or tak upgrade
 python3 web/serve.py         # then open http://127.0.0.1:8080
 ```
 
@@ -48,7 +50,7 @@ Numbered slots under `data/` (or `TIDEWATER_SAVE_DIR`), one `save.json` each, va
 
 ## Usage reporting
 
-Off until a program key is issued. When it is, Tidewater will send one `startup` event and one `save-loaded` event (program name and version only) to [trace](https://github.com/Stephenson-Software/trace); `TIDEWATER_USAGE_REPORTING_ENABLED=false`, `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turns it off, and the browser build never reports.
+The code is wired to report one `startup` event and one `save-loaded` event (program name and version only) to `trace.danielstephenson.dev`, but the program key in `src/tidewater/config.py` is empty, so nothing is sent until one is issued. When it is: `TIDEWATER_USAGE_REPORTING_ENABLED=false`, `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turns it off, the browser build never reports, and what is collected and why is written up in the [trace client's README](https://github.com/Stephenson-Software/trace-client-python#turning-it-off).
 
 ## Development
 

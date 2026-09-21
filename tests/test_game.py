@@ -93,6 +93,43 @@ def test_the_loop_can_be_broken_in_two_loops(scripted):
         assert json.load(f)["meta"]["loopBroken"] is True
 
 
+# The other way to the Marigold's name: Gilbert's hint instead of Sam's.
+LOOP_ONE_VIA_SHOP = [
+    "Create New Save",
+    "Go to Gilbert's shop",
+    "Talk to Gilbert",
+    "What's the matter with Old Tom?",
+    "[Back]",  # 8 -> 9: GILBERT_LEDGERS
+    "Go to the bank",
+    "Talk to Margaret",
+    "old books about the harbour bell",
+    "[Back]",  # 9 -> 10: MARIGOLD
+    "Go home",
+    "Sleep until the bell",
+]
+
+
+def test_gilberts_hint_is_the_other_way_to_the_ledger(scripted):
+    game, ui = scripted(LOOP_ONE_VIA_SHOP + LOOP_TWO)
+    game.play()
+    assert game.meta.loopBroken is True
+    assert game.meta.knows(facts.GILBERT_LEDGERS) and not game.meta.knows(
+        facts.SAM_BELL
+    )
+
+
+def test_the_header_follows_the_state(scripted):
+    game, ui = scripted(LOOP_ONE + LOOP_TWO)
+    game.play()
+    chips = [[c["text"] for c in h["chips"]] for h in ui.headers]
+    assert chips[1] == ["Loop 1", "8:00 AM", "The Docks", "Known: 0/7"]
+    assert any("Loop 2" in c and "Carrying: the bell rope" in c for c in chips)
+    hung = [c for c in chips if "Loop 2" in c and "8:00 PM" in c][0]
+    assert "Carrying: the bell rope" not in hung  # hung, not carried
+    assert chips[-1][0] == "Day 1 after the bell"
+    assert ui.headers[-1]["title"] == "Tidewater - Day 1 after the bell"
+
+
 def test_the_first_loop_alone_does_not_break_anything(scripted):
     game, ui = scripted(LOOP_ONE + ["Quit"])
     game.play()

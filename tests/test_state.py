@@ -41,7 +41,6 @@ def test_unknown_facts_in_a_save_are_dropped_on_load():
 def test_the_day_is_the_same_day_every_loop():
     # Same seed, same draws: a player who does the same thing sees the same
     # thing. That is how the loop announces itself without a word.
-    first = [LoopState().draw(range(100)) for _ in range(1)]
     a, b = LoopState(), LoopState()
     assert [a.draw(range(100)) for _ in range(8)] == [
         b.draw(range(100)) for _ in range(8)
@@ -50,15 +49,20 @@ def test_the_day_is_the_same_day_every_loop():
     assert WORLD_SEED == 1897
 
 
-def test_a_loaded_day_continues_the_same_sequence():
+@pytest.mark.parametrize("savedAfter", range(0, 40, 3))
+def test_a_loaded_day_continues_the_same_sequence(savedAfter):
+    # A population of 100 - not a power of two - is the case that broke the
+    # first implementation, which replayed a long-lived generator: choice()
+    # rejection-samples, so N replayed draws did not consume what the N real
+    # draws had. Every save point must continue identically.
     a = LoopState()
-    taken = [a.draw(range(100)) for _ in range(3)]
-    rest = [a.draw(range(100)) for _ in range(3)]
-    b = LoopState.fromDict(
-        toSaveDict(MetaState(), LoopState.fromDict({"hour": 8, "rngDraws": 3}))["loop"]
-    )
-    assert [b.draw(range(100)) for _ in range(3)] == rest
-    assert taken != rest
+    for _ in range(savedAfter):
+        a.draw(range(100))
+    rest = [a.draw(range(100)) for _ in range(5)]
+    b = LoopState.fromDict(toSaveDict(MetaState(), a)["loop"])
+    assert b.rngDraws == savedAfter + 5
+    a2 = LoopState.fromDict({"hour": 8, "rngDraws": savedAfter})
+    assert [a2.draw(range(100)) for _ in range(5)] == rest
 
 
 def test_schema_rejects_an_hour_off_the_clock():

@@ -92,14 +92,8 @@ class TraceClient:
     QUEUE_CAPACITY = 256
     TIMEOUT_SECONDS = 5.0
 
-    def __init__(
-        self,
-        base_url: str,
-        application: str,
-        *,
-        key: Optional[str] = None,
-        enabled: bool = True,
-    ) -> None:
+    def __init__(self, base_url: str, application: str, *, key: Optional[str] = None,
+                 enabled: bool = True) -> None:
         if not base_url or not base_url.strip():
             raise ValueError("base_url is required")
         if not application or not application.strip():
@@ -122,11 +116,8 @@ class TraceClient:
             self.disabled_reason = REASON_NO_KEY
         if self.disabled_reason is None:
             self._queue = queue.Queue(maxsize=self.QUEUE_CAPACITY)
-            self._thread = threading.Thread(
-                target=self._drain,
-                name="trace-client/" + self._application,
-                daemon=True,
-            )
+            self._thread = threading.Thread(target=self._drain, name="trace-client/" + self._application,
+                                            daemon=True)
             self._thread.start()
 
     @classmethod
@@ -141,12 +132,8 @@ class TraceClient:
         built off, if it was."""
         return self._queue is not None
 
-    def report(
-        self,
-        name: str,
-        value: Optional[float] = None,
-        tags: Optional[Mapping[str, str]] = None,
-    ) -> None:
+    def report(self, name: str, value: Optional[float] = None,
+               tags: Optional[Mapping[str, str]] = None) -> None:
         """Report that ``name`` happened, with an optional numeric value and
         optional string tags. Returns immediately; see the class docstring."""
         if self._queue is None or not name or not name.strip():
@@ -156,9 +143,7 @@ class TraceClient:
             self._queue.put_nowait(body)
         except queue.Full:
             _LOG.debug("[trace] queue full, dropped %s", name)
-        except (
-            Exception
-        ) as failure:  # noqa: BLE001 - a report must never be the reason a program stops
+        except Exception as failure:  # noqa: BLE001 - a report must never be the reason a program stops
             _LOG.debug("[trace] could not queue %s: %s", name, failure)
 
     def close(self, timeout: float = TIMEOUT_SECONDS) -> None:
@@ -199,20 +184,14 @@ class TraceClient:
 
     def _send(self, body: bytes) -> None:
         request = urllib.request.Request(
-            self._endpoint,
-            data=body,
-            method="POST",
+            self._endpoint, data=body, method="POST",
             headers={
                 "Content-Type": "application/json; charset=utf-8",
                 "Authorization": "Bearer " + self._key,
-                "User-Agent": "trace-client-python/%s (%s)"
-                % (__version__, self._application),
-            },
-        )
+                "User-Agent": "trace-client-python/%s (%s)" % (__version__, self._application),
+            })
         try:
-            with urllib.request.urlopen(
-                request, timeout=self.TIMEOUT_SECONDS
-            ) as response:
+            with urllib.request.urlopen(request, timeout=self.TIMEOUT_SECONDS) as response:
                 status = response.status
                 response.read()
         except urllib.error.HTTPError as answered:
@@ -228,23 +207,12 @@ class TraceClient:
             _LOG.debug("[trace] trace server answered %s for %s", status, body)
 
 
-def _json(
-    application: str,
-    name: str,
-    value: Optional[float],
-    tags: Optional[Mapping[str, str]],
-) -> bytes:
+def _json(application: str, name: str, value: Optional[float], tags: Optional[Mapping[str, str]]) -> bytes:
     payload: Dict[str, object] = {"application": application, "name": name}
-    if (
-        value is not None
-        and value == value
-        and value not in (float("inf"), float("-inf"))
-    ):
+    if value is not None and value == value and value not in (float("inf"), float("-inf")):
         payload["value"] = value
     if tags:
-        clean = {
-            str(k): str(v) for k, v in tags.items() if k is not None and v is not None
-        }
+        clean = {str(k): str(v) for k, v in tags.items() if k is not None and v is not None}
         if clean:
             payload["tags"] = clean
     return json.dumps(payload, separators=(",", ":")).encode("utf-8")

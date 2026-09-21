@@ -32,6 +32,7 @@ class ScriptedUI(BaseUserInterface):
         super().__init__(Prompt(), header)
         self.script = list(script)
         self.menus = []
+        self.headers = []
         self.dialogues = []
         self.cleanedUp = False
 
@@ -43,6 +44,9 @@ class ScriptedUI(BaseUserInterface):
 
     def showOptions(self, descriptor, optionList, unavailableOptions=None):
         reasons = self.unavailableReasons(optionList, unavailableOptions)
+        # Read the header the way a real front-end would, so the provider
+        # runs on every menu and a typo in it fails the playthrough.
+        self.headers.append(self.header())
         self.menus.append(
             (descriptor, list(optionList), reasons, self.currentPrompt.text)
         )

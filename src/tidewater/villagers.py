@@ -9,6 +9,8 @@ the line is heard and not when the menu is built.
 
 from tak import NPC
 
+from tidewater.loop import ROPE_HUNG
+
 from tidewater import facts
 
 ROPE = "rope"
@@ -128,6 +130,11 @@ def oldTom(game):
     meta = game.meta
 
     def theMarigold():
+        if game.loop.flags.get(ROPE_HUNG):
+            return (
+                "It's hung? Then there's nothing left but the hour. Be up "
+                "there when it comes."
+            )
         if game.loop.has(ROPE):
             return (
                 "You've got it. Go on, then - before the weather. And ring it "

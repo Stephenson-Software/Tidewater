@@ -83,18 +83,26 @@ class LoopState:
         # Facts learned this loop, for the "what you learned" summary the
         # reset shows. Cleared by the reset along with everything else.
         self.newFacts = []
-        # How many draws have been taken from the day's random sequence, so a
+        # How many draws have been taken from the day's fixed sequence, so a
         # loaded game continues the same day rather than restarting the dice.
         self.rngDraws = 0
-        self._rng = random.Random(WORLD_SEED)
 
     def has(self, item):
         return item in self.items
 
     def draw(self, choices):
-        """One draw from the day's fixed sequence."""
+        """One draw from the day's fixed sequence.
+
+        Each draw is a pure function of the world seed and its own index -
+        a fresh generator seeded per draw - rather than the next output of one
+        long-lived generator. That is what makes a loaded save continue the
+        sequence exactly: replaying N draws of a long-lived generator is only
+        faithful when every draw consumes the same amount of randomness, and
+        random.choice does not (it rejection-samples for populations whose
+        size is not a power of two)."""
+        rng = random.Random(WORLD_SEED * 1000003 + self.rngDraws)
         self.rngDraws += 1
-        return self._rng.choice(choices)
+        return rng.choice(choices)
 
     def toDict(self):
         return {
@@ -114,10 +122,7 @@ class LoopState:
         loop.items = list(data.get("items", []))
         loop.flags = dict(data.get("flags", {}))
         loop.newFacts = list(data.get("newFacts", []))
-        # Replay the draws already taken so the sequence picks up where the
-        # saved day left off.
-        for _ in range(data.get("rngDraws", 0)):
-            loop.draw([0])
+        loop.rngDraws = data.get("rngDraws", 0)
         return loop
 
 

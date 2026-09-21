@@ -82,6 +82,7 @@ class Docks(Scene):
             return self.afterHour()
         if kind == "hang":
             self.loop.flags[ROPE_HUNG] = True
+            self.loop.items.remove(villagers.ROPE)
             self.ui.showDialogue(
                 "You climb the tower with the rope over your shoulder. The eye "
                 "takes it; the knot holds. When you let go the rope hangs "

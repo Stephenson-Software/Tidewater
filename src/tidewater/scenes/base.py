@@ -1,4 +1,5 @@
 # @author Daniel McCoy Stephenson
+from tidewater.flags import LIGHT_HELD
 from tidewater.loop import stormRaging
 
 STORM_REASON = "the storm's too fierce to reach the docks"
@@ -47,6 +48,11 @@ class Scene:
             options.append(TRAVEL_LABELS[destination])
             actions.append(("go", destination))
             if destination in STORM_BOUND and stormRaging(self.loop.hour):
+                # With the light held on the point the beam lays a road along
+                # the front: the docks can be reached through the weather,
+                # which is what makes the bell reachable after the lamp.
+                if destination == "docks" and self.loop.flags.get(LIGHT_HELD):
+                    continue
                 unavailable[len(options)] = STORM_BOUND[destination]
         options.append("Quit")
         actions.append(("quit", None))

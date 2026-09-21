@@ -11,6 +11,10 @@ its flag and a typo is an import error rather than a silent no-op.
 # Things done to the village that an ending turns on.
 ROPE_HUNG = "ropeHung"
 LAMP_LIT = "lampLit"
+# Set at nine when the lit lamp meets the storm and the rope is hung too: the
+# light held, the loop goes on to eleven, and the bell ending becomes the
+# whole of the night.
+LIGHT_HELD = "lightHeld"
 
 # Choices people hold you to for the day - see Scene.remember.
 TOLD_MARGARET_ABOUT_TOM = "toldMargaretAboutTom"
@@ -21,6 +25,7 @@ SHAMED_GILBERT = "shamedGilbert"
 ALL = (
     ROPE_HUNG,
     LAMP_LIT,
+    LIGHT_HELD,
     TOLD_MARGARET_ABOUT_TOM,
     HURRIED_ADA,
     TOLD_TOM_OF_NELL,

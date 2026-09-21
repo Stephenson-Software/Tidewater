@@ -76,16 +76,51 @@ def test_the_storm_is_still_lived_through_on_the_way_to_the_light():
     assert outcome.lines[0].startswith("The wind turns.")
 
 
-def test_with_both_the_lamp_lit_and_the_rope_hung_the_light_fires_first():
+def test_with_both_the_lamp_lit_and_the_rope_hung_the_night_is_mended_at_eleven():
+    # The light is not an ending when the rope is hung too: it holds at
+    # nine, the loop goes on, and the bell at eleven is the whole of it.
     game = FakeGame()
     game.loop.flags[flags.LAMP_LIT] = True
     game.loop.flags[flags.ROPE_HUNG] = True
-    outcome = advance(game, BELL_HOUR - 8)
-    assert outcome.ending == engine.ENDING_LIGHT
-    assert game.meta.endings == [engine.ENDING_LIGHT]
-    assert not game.meta.knows(facts.LOOP_BROKEN)
-    # The bell's flag went with the day; the bell never rang for it.
+    toNine = advance(game, STORM_HOUR - 8)
+    assert toNine.ending is None and not toNine.reset
+    assert game.loop.flags[flags.LIGHT_HELD] is True
+    assert game.meta.knows(facts.THE_LIGHT_HELD)
+    assert "The bell is two hours off" in "\n".join(
+        toNine.lines
+    )  # FakeGame starts on the docks
+    toEleven = advance(game, BELL_HOUR - STORM_HOUR)
+    assert toEleven.ending == engine.ENDING_BOTH
+    assert game.meta.endings == [engine.ENDING_BOTH]
+    assert game.meta.knows(facts.THE_NIGHT_MENDED)
+    assert game.meta.knows(facts.WHO_CUT_THE_ROPE) and game.meta.knows(
+        facts.WHY_IT_RINGS
+    )
+    assert not game.meta.knows(facts.LOOP_BROKEN)  # that is the half-mended one
+    text = "\n".join(toEleven.lines)
+    assert "I cut it" in text and "Both done now" in text
+    assert engine.endingName(game.meta) == "the bell and the light"
     assert game.loop.flags == {}
+
+
+def test_each_ending_alone_answers_the_questions_and_says_what_is_left():
+    light = FakeGame()
+    light.loop.flags[flags.LAMP_LIT] = True
+    text = "\n".join(advance(light, STORM_HOUR - 8).lines)
+    assert light.meta.knows(facts.WHO_CUT_THE_ROPE) and light.meta.knows(
+        facts.WHY_IT_RINGS
+    )
+    assert "It was Tom" in text and "the not-doing of it" in text
+    assert "still standing open" in text
+
+    bell = FakeGame()
+    bell.loop.flags[flags.ROPE_HUNG] = True
+    text = "\n".join(advance(bell, BELL_HOUR - 8).lines)
+    assert bell.meta.knows(facts.WHO_CUT_THE_ROPE) and bell.meta.knows(
+        facts.WHY_IT_RINGS
+    )
+    assert "'I cut it,' he says" in text and "not-doing of it" in text
+    assert "still standing open" in text
 
 
 def test_the_rope_alone_still_rings_the_bell_at_eleven():
@@ -136,7 +171,7 @@ def test_the_gilbert_choice_changes_what_he_does_when_the_light_holds():
     spared.loop.flags[flags.SHAMED_GILBERT] = False
     b = "\n".join(advance(spared, STORM_HOUR - 8).lines)
     assert "Gilbert is standing in his doorway" in a
-    assert "Gilbert" not in b
+    assert "Gilbert is standing in his doorway" not in b
     assert "Ada" in a and "Ada" in b
 
 
@@ -285,8 +320,9 @@ def test_the_loop_can_be_broken_by_the_light_in_two_loops(scripted):
     assert chips[-1][0] == "Day 1 after the light"
 
 
-def test_the_lit_lamp_is_visible_and_the_light_wins_over_the_bell(scripted):
-    # Loop two: get the rope AND light the lamp; the loop breaks at nine.
+def test_the_lit_lamp_and_the_hung_rope_together_mend_the_night(scripted):
+    # Loop two: light the lamp AND hang the rope; the light holds at nine and
+    # the bell at eleven is the whole of it.
     script = (
         LOOP_ONE
         + [
@@ -313,15 +349,22 @@ def test_the_lit_lamp_is_visible_and_the_light_wins_over_the_bell(scripted):
             "[Back]",  # -> 19, rope
             "Go to the docks",
             "Climb the tower and hang the bell rope",  # -> 20
-            "Wait in the tower for eleven",  # -> nine comes first
+            "Wait in the tower for eleven",  # -> nine holds, eleven ends it
             "Quit",
         ]
     )
     game, ui = scripted(script)
     game.play()
-    assert game.meta.endings == ["light"]
-    assert game.meta.knows(facts.THE_ROPE) and not game.meta.knows(facts.LOOP_BROKEN)
-    assert ui.saw("Gilbert is standing in his doorway")
+    assert game.meta.endings == ["both"]
+    assert game.meta.knows(facts.THE_NIGHT_MENDED)
+    assert game.meta.knows(facts.WHO_CUT_THE_ROPE) and game.meta.knows(
+        facts.WHY_IT_RINGS
+    )
+    assert not game.meta.knows(facts.LOOP_BROKEN)
+    assert ui.saw("up the tower steps where you stand") and ui.saw("Both done now")
+    assert [c["text"] for c in ui.headers[-1]["chips"]][
+        0
+    ] == "Day 1 after the bell and the light"
     lit = [m for m in ui.menus if m[0].startswith("The lamp room. The lamp is lit")]
     assert lit and "Wait in the lamp room for nine" in lit[0][1]
 
@@ -336,3 +379,48 @@ def test_the_journal_counts_both_trails(scripted):
     assert "on the trail of the bell" in journal
     assert "on the trail of the light" in journal
     assert ui.saw("(* marks the trail of the bell, or of the light.)")
+
+
+def test_the_held_light_opens_the_way_from_the_lamp_room_to_the_tower(scripted):
+    # Light the lamp, hang the rope, then wait in the lamp room for nine:
+    # the beam lights the front, the docks are reachable through the storm,
+    # and the bell at eleven mends the night.
+    script = (
+        LOOP_ONE
+        + [
+            "Wait an hour",
+            "Walk out to the lighthouse",
+            "Ask about the night the Marigold went down",
+            "Let her tell it in her own time.",
+            "Talk to Ada",
+            "How long did the lamp hold",
+            "[Back]",
+            "Go to Gilbert's shop",
+            "Talk to Gilbert",
+            "whatever's owed",
+            "[Back]",  # -> 13
+            "Go home",
+        ]
+        + ["Wait an hour"] * 5
+        + [  # -> 18
+            "Go to the tavern",
+            "Talk to Old Tom",
+            "I know about the Marigold",
+            "[Back]",  # -> 19, rope
+            "Go to the docks",
+            "Climb the tower and hang the bell rope",  # -> 20
+            "Walk out to the lighthouse",
+            "Fill the lamp and light it",  # -> 21: the light holds, the night goes on
+            "Go to the docks",  # through the storm, by the beam
+            "Wait in the tower for eleven",
+            "Quit",
+        ]
+    )
+    game, ui = scripted(script)
+    game.play()
+    assert game.meta.endings == ["both"]
+    assert ui.saw("the beam will light you down the point")
+    lampRoom = [m for m in ui.menus if m[0].startswith("The lamp room in the storm")]
+    assert lampRoom, "the lamp-room-in-the-storm menu was never shown"
+    docksRow = lampRoom[0][1].index("Go to the docks")
+    assert lampRoom[0][2][docksRow] is None  # reachable, not greyed out

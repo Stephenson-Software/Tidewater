@@ -178,7 +178,7 @@ def test_toms_choice_needs_the_name_and_the_rope_and_changes_the_ending():
     game.loop.flags[engine.ROPE_HUNG] = True
     outcome = engine.advance(game, 40)
     assert outcome.ending == engine.ENDING_BELL
-    assert "over and over" in "\n".join(outcome.lines)
+    assert "You found Nell's stone" in "\n".join(outcome.lines)
 
 
 # --- the beat, through the scenes --------------------------------------------

@@ -34,10 +34,15 @@ LAMP_LIT = flags.LAMP_LIT
 
 ENDING_BELL = "bell"
 ENDING_LIGHT = "light"
+ENDING_BOTH = "both"
 
 # What each ending is called the morning after, in the header and the day
 # report: "Day 3 after the bell", "the 2nd since the light".
-ENDING_NAMES = {ENDING_BELL: "the bell", ENDING_LIGHT: "the light"}
+ENDING_NAMES = {
+    ENDING_BELL: "the bell",
+    ENDING_LIGHT: "the light",
+    ENDING_BOTH: "the bell and the light",
+}
 
 
 def endingName(meta):
@@ -153,6 +158,8 @@ def advance(game, hours=1):
                 outcome.lines.append(
                     "[You've learned something. It's in your journal.]"
                 )
+            if _lightHoldsButTheNightGoesOn(game):
+                _theLightHolds(game, outcome)
         ending = _endingDue(game, hour)
         if ending is not None:
             ending.handler(game, outcome)
@@ -164,26 +171,42 @@ def advance(game, hours=1):
 
 
 class Ending:
-    """One way out of the loop: at ``hour``, if ``flag`` is set on the loop,
-    ``handler`` breaks the loop and records ``id`` on MetaState.endings."""
+    """One way out of the loop: at ``hour``, if ``flag`` is set on the loop
+    (and ``unless``, another flag, is not), ``handler`` breaks the loop and
+    records an id on MetaState.endings."""
 
-    def __init__(self, hour, flag, id, handler):
+    def __init__(self, hour, flag, id, handler, unless=None):
         self.hour = hour
         self.flag = flag
         self.id = id
         self.handler = handler
+        self.unless = unless
+
+
+def _lightHoldsButTheNightGoesOn(game):
+    """Nine o'clock with the lamp lit *and* the rope hung: the light is not
+    an ending tonight but the first half of one. The storm is met, the loop
+    goes on to eleven, and the bell rings with the point lit behind it."""
+    if game.meta.loopBroken:
+        return False
+    return bool(game.loop.flags.get(flags.LAMP_LIT)) and bool(
+        game.loop.flags.get(flags.ROPE_HUNG)
+    )
 
 
 def _endingDue(game, hour):
-    """The ending that fires this hour, or None. Earliest hour wins, so a
-    player who has both lit the lamp and hung the rope breaks the loop at
-    nine with the light and never reaches the bell. Once the loop is broken
-    the endings are history and the days are ordinary."""
+    """The ending that fires this hour, or None. Once the loop is broken the
+    endings are history and the days are ordinary. The light's row stands
+    down when the rope is hung as well, so that a player who has mended both
+    halves of the night reaches the bell - see _lightHoldsButTheNightGoesOn."""
     if game.meta.loopBroken:
         return None
     for ending in ENDINGS:
-        if ending.hour == hour and game.loop.flags.get(ending.flag):
-            return ending
+        if ending.hour != hour or not game.loop.flags.get(ending.flag):
+            continue
+        if ending.unless and game.loop.flags.get(ending.unless):
+            continue
+        return ending
     return None
 
 
@@ -228,40 +251,120 @@ def _endDay(game, outcome):
     _newDay(game)
 
 
+def _whatTomTells(game, outcome, lightHeld):
+    """The answers, in Tom's mouth, in the tower after the bell.
+
+    He is the one person who could give them, and the only reason he
+    climbs the tower is that somebody finally did what he could not.
+    lightHeld is whether the point was lit tonight; it changes what he has
+    to forgive himself for."""
+    told = game.loop.flags.get(flags.TOLD_TOM_OF_NELL)
+    outcome.lines.append(
+        "Feet on the tower stairs. Old Tom comes up into the dark with his "
+        "hat in his hand and stands looking at the rope a long while before "
+        "he says anything. 'I cut it,' he says. 'Not that night. Weeks "
+        "before. Gilbert's father wouldn't give me a fathom on credit and "
+        "the Marigold's mooring was rotten through, so I went up here one "
+        "night and took the bell's. It was aboard her when she went down. "
+        "Holding her to a quay she never reached.' He does not look at you. "
+        "'Nobody could ring for her because the rope was out there with "
+        "her. I came ashore with it. I've had it thirty years.'"
+    )
+    if told:
+        outcome.lines.append(
+            "'You found Nell's stone,' he says. 'You knew, and you rang it "
+            "anyway. For her.' He puts a hand flat on the bell, which is "
+            "still warm from ringing, and keeps it there."
+        )
+    if lightHeld:
+        outcome.lines.append(
+            "Out on the point the beam comes round, and round again, laying "
+            "a road on the water. 'That was dark too,' Tom says. 'Both of "
+            "them, that night. Every other boat this village lost was called "
+            "in and lit in. Not mine. That's what's been ringing. Not the "
+            "bell - the not-doing of it.' The beam comes round. 'Both done "
+            "now. Both, in one night, by somebody who took the trouble to "
+            "find out. It can stop.'"
+        )
+    else:
+        outcome.lines.append(
+            "'Every other boat this village lost was called in with this "
+            "and lit in from the point. Not mine. The lamp was dark that "
+            "night too - ask Ada why, if you've the stomach for old "
+            "Gilbert's bookkeeping. That's what's been ringing. Not the "
+            "bell. The not-doing of it.' He looks out at the point, where "
+            "there is no light. 'You've done the half of it that was mine "
+            "to do. I'll take that.'"
+        )
+    game.learn(facts.WHO_CUT_THE_ROPE)
+    game.learn(facts.WHY_IT_RINGS)
+
+
 def _ringForTheMarigold(game, outcome):
     meta = game.meta
+    lightHeld = bool(game.loop.flags.get(flags.LIGHT_HELD))
     meta.loopBroken = True
-    meta.endings.append(ENDING_BELL)
-    game.learn(facts.LOOP_BROKEN)
-    outcome.ending = ENDING_BELL
+    meta.endings.append(ENDING_BOTH if lightHeld else ENDING_BELL)
+    outcome.ending = ENDING_BOTH if lightHeld else ENDING_BELL
     outcome.lines.append(
         "Eleven o'clock. You take the rope in both hands and pull, and the "
         "harbour bell rings - not once, but again and again, the way it "
         "should have rung thirty years ago, out over the water where the "
         "Marigold went down."
     )
-    if game.loop.flags.get(flags.TOLD_TOM_OF_NELL):
+    outcome.lines.append(
+        "Lights come on along the front. The tavern door is open and nobody "
+        "is standing in it."
+    )
+    _whatTomTells(game, outcome, lightHeld)
+    if lightHeld:
+        game.learn(facts.THE_NIGHT_MENDED)
         outcome.lines.append(
-            "Lights come on along the front. Old Tom is standing at the tavern "
-            "door with his hat off, and he is saying something over and over "
-            "that you are too far away to hear and do not need to. When the "
-            "last note has gone out over the water there is nothing after it "
-            "but the night, and the night, for the first time, goes on."
+            "When the last note has gone out over the water there is nothing "
+            "after it but the beam going round and the rain easing, and the "
+            "night, for the first time, goes on. The next morning is new. "
+            "The night of the ninth is closed."
         )
     else:
+        game.learn(facts.LOOP_BROKEN)
         outcome.lines.append(
-            "Lights come on along the front. Old Tom is standing at the tavern "
-            "door with his hat off. When the last note has gone out over the "
-            "water there is nothing after it but the night, and the night, for "
-            "the first time, goes on."
+            "When the last note has gone out over the water there is nothing "
+            "after it but the night, and the night, for the first time, goes "
+            "on. Out on the point the lamp stays dark. The next morning is "
+            "new, and one half of that old night is still standing open."
         )
     outcome.lines.append("You have broken the loop. Loop %d was the last." % meta.loops)
     outcome.reset = True
     _newDay(game)
 
 
+def _theLightHolds(game, outcome):
+    """Nine o'clock with the lamp lit and the rope hung: the storm is met,
+    and the night goes on to the bell."""
+    game.loop.flags[flags.LIGHT_HELD] = True
+    game.learn(facts.THE_LIGHT_HELD)
+    if game.loop.location == "lighthouse":
+        outcome.lines.append(
+            "This time there is a light on the point to meet it. The glass "
+            "goes white with spray and the lamp burns behind it, and burns, "
+            "and does not go out. Ada has stopped polishing the lens. 'Half,' "
+            "she says, watching the beam go round. 'That's the half that was "
+            "mine. The bell's still yours, and the beam will light you down "
+            "the point and along the front. Go on - you've two hours.'"
+        )
+    else:
+        outcome.lines.append(
+            "This time there is a light on the point to meet it. The beam "
+            "comes round through the rain and lays a road on the water, and "
+            "along the front, and up the tower steps where you stand. It "
+            "burns, and burns, and does not go out. Half of the night is "
+            "mended. The bell is two hours off."
+        )
+
+
 def _holdTheLight(game, outcome):
-    """Nine o'clock with the lamp burning: the second way out."""
+    """Nine o'clock with the lamp burning and no rope on the bell: the
+    second way out, and Ada's answers."""
     meta = game.meta
     meta.loopBroken = True
     meta.endings.append(ENDING_LIGHT)
@@ -278,19 +381,35 @@ def _holdTheLight(game, outcome):
             "Along the front the shutters are up against the weather, all but "
             "one: Gilbert is standing in his doorway in the rain, looking out "
             "at the point, and does not go in until the beam has swung round "
-            "three times. Above him, in the lamp room, Ada has stopped "
-            "polishing the lens and is only watching it turn."
-        )
-    else:
-        outcome.lines.append(
-            "Along the front the shutters are up against the weather. Up in "
-            "the lamp room Ada has stopped polishing the lens and is only "
-            "watching the beam go round, out over the water where the "
-            "Marigold went down, and round again."
+            "three times."
         )
     outcome.lines.append(
+        "Up in the lamp room Ada has stopped polishing the lens and is only "
+        "watching the beam go round, out over the water where the Marigold "
+        "went down, and round again. After a while she talks, without "
+        "looking away from it. 'You've been wondering who cut that rope. "
+        "Nobody, that night - I told you, I saw the whole front and nobody "
+        "went near the tower. It was Tom. Weeks before. Gilbert's father "
+        "wouldn't give him a fathom on credit and the Marigold's mooring was "
+        "rotten, so he went up one night and took the bell's. It was aboard "
+        "her when she went down. Holding her to a quay she never reached. "
+        "Nobody could ring for her because the rope was out there with her. "
+        "He came ashore with it. He's had it thirty years.'"
+    )
+    outcome.lines.append(
+        "'Every other boat this village lost was lit in from here and called "
+        "in with that bell. Not that one. Both dark. That's what rings at "
+        "eleven - not the bell, the not-doing of it - and that's why the day "
+        "keeps coming back round. Somebody has to close it.' The beam comes "
+        "round. 'You've done my half. The other half's still hanging in his "
+        "cellar.'"
+    )
+    game.learn(facts.WHO_CUT_THE_ROPE)
+    game.learn(facts.WHY_IT_RINGS)
+    outcome.lines.append(
         "There is no bell at eleven. There is nothing at eleven but the rain "
-        "easing, and then the morning, and the morning is new."
+        "easing, and then the morning, and the morning is new - and one half "
+        "of that old night is still standing open."
     )
     outcome.lines.append("You have broken the loop. Loop %d was the last." % meta.loops)
     outcome.reset = True
@@ -301,7 +420,9 @@ def _holdTheLight(game, outcome):
 # here, a flag in tidewater.flags, and a handler above - never an `if` in a
 # scene.
 ENDINGS = (
-    Ending(STORM_HOUR, flags.LAMP_LIT, ENDING_LIGHT, _holdTheLight),
+    Ending(
+        STORM_HOUR, flags.LAMP_LIT, ENDING_LIGHT, _holdTheLight, unless=flags.ROPE_HUNG
+    ),
     Ending(BELL_HOUR, flags.ROPE_HUNG, ENDING_BELL, _ringForTheMarigold),
 )
 

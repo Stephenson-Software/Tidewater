@@ -25,8 +25,14 @@ OTHER_BOATS = "other_boats"
 THE_HANDS = "the_hands"
 THE_OIL = "the_oil"
 THE_LIGHT_HELD = "the_light_held"
+WHO_CUT_THE_ROPE = "who_cut_the_rope"
+WHY_IT_RINGS = "why_it_rings"
+THE_NIGHT_MENDED = "the_night_mended"
 THE_OIL = "the_oil"
 THE_LIGHT_HELD = "the_light_held"
+WHO_CUT_THE_ROPE = "who_cut_the_rope"
+WHY_IT_RINGS = "why_it_rings"
+THE_NIGHT_MENDED = "the_night_mended"
 
 FACTS = {
     THE_BELL: {
@@ -38,6 +44,12 @@ FACTS = {
                 "to": SAM_BELL,
                 "text": "Someone who spends all day on the docks would know "
                 "about that bell.",
+            },
+            {
+                "to": WHY_IT_RINGS,
+                "text": "A bell with no rope, ringing at the same hour every "
+                "night. Something is being asked. Whoever answers it will be "
+                "told what.",
             },
         ],
     },
@@ -96,6 +108,12 @@ FACTS = {
                 "to": OTHER_BOATS,
                 "text": "One page of a ledger. Margaret has more than one " "ledger.",
             },
+            {
+                "to": WHO_CUT_THE_ROPE,
+                "text": "'Rope found cut.' Found by whom, cut by whom, and when? "
+                "Nobody in the village says. Whoever ends this night will be "
+                "told.",
+            },
         ],
     },
     THE_ROPE: {
@@ -114,7 +132,16 @@ FACTS = {
     LOOP_BROKEN: {
         "title": "The day that ended",
         "text": "You hung the rope, and at eleven the bell rang for the Marigold "
-        "at last. The day ended. The next one was new.",
+        "at last. Tom climbed the tower and told you the rest. The day ended. "
+        "The next one was new.",
+        "leads": [
+            {
+                "to": THE_NIGHT_MENDED,
+                "text": "The bell was rung. The light on the point was dark "
+                "that night too. Two things failed the Marigold; only one is "
+                "mended.",
+            },
+        ],
     },
     KEEPER_SAW: {
         "title": "What the keeper saw",
@@ -174,8 +201,40 @@ FACTS = {
     THE_LIGHT_HELD: {
         "title": "The night the light held",
         "text": "You filled the lamp and lit it, and when the storm came in "
-        "at nine the light on the point met it and did not go out. There "
-        "was no bell at eleven. The day ended. The next one was new.",
+        "at nine the light on the point met it and did not go out. Ada told "
+        "you the rest, up there in the lamp room. There was no bell at "
+        "eleven. The day ended. The next one was new.",
+        "leads": [
+            {
+                "to": THE_NIGHT_MENDED,
+                "text": "The light held. The bell still has no rope on it. Two "
+                "things failed the Marigold; only one is mended.",
+            },
+        ],
+    },
+    WHO_CUT_THE_ROPE: {
+        "title": "Who cut the rope",
+        "text": "Nobody cut it that night. Tom cut it weeks before, from the "
+        "bell himself, because old Gilbert would not give him a fathom of "
+        "cordage on credit and the Marigold's mooring line was rotten "
+        "through. The bell rope was aboard the Marigold when she went "
+        "down, holding her to the quay she never reached. He came ashore "
+        "with it. That is why nobody could ring, and why he kept it.",
+    },
+    WHY_IT_RINGS: {
+        "title": "Why the bell rings",
+        "text": "It rings for what was not done. Every boat the village lost "
+        "was called home with the bell and lit home with the lamp, except "
+        "one, and for thirty years the night of the ninth has stood open. "
+        "The day comes round to give someone the chance to close it. It "
+        "will keep coming round until both halves are done.",
+    },
+    THE_NIGHT_MENDED: {
+        "title": "The night, mended",
+        "text": "The lamp held through the storm at nine and the bell rang "
+        "at eleven - both the things that failed the Marigold, done in one "
+        "night by one person who knew. Tom climbed the tower and told the "
+        "whole of it himself. The day ended, and the next one was new.",
     },
 }
 

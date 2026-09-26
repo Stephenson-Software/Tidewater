@@ -57,3 +57,12 @@ def test_pyodide_entry_point_builds_the_pyodide_front_end():
     with open(os.path.join(REPOSITORY_ROOT, "web", "pyodide_main.py")) as f:
         source = f.read()
     assert "UIType.PYODIDE" in source and "Tidewater(" in source
+
+
+def test_the_page_credits_the_author_outside_the_game_area():
+    with open(os.path.join(REPOSITORY_ROOT, "web", "index.html")) as f:
+        page = f.read()
+    credit = '<a href="https://danielstephenson.dev">danielstephenson.dev</a>'
+    assert "More by Daniel Stephenson &rarr; " + credit in page
+    # After #app has closed, so the line sits below the game, not inside it.
+    assert page.index(credit) > page.index('<div id="app"></div>')

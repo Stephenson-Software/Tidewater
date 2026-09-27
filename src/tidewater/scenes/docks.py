@@ -31,7 +31,10 @@ class Docks(Scene):
                     "rope sways in your hands. It's %s." % formatHour(hour)
                 )
             return "The docks. Up in the tower the rope hangs from the bell, waiting."
-        if hour == 8 and self.meta.loops == 1:
+        # Knowledge, not the loop counter, decides the morning: the bell is
+        # the fact the first reset leaves behind, and "Again." belongs to
+        # someone who has heard it.
+        if hour == 8 and not self.meta.knows(facts.THE_BELL):
             return (
                 "You wake on the docks with a rod beside you and the whole sea in "
                 "front of you. It's eight in the morning."

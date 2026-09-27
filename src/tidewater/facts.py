@@ -28,11 +28,6 @@ THE_LIGHT_HELD = "the_light_held"
 WHO_CUT_THE_ROPE = "who_cut_the_rope"
 WHY_IT_RINGS = "why_it_rings"
 THE_NIGHT_MENDED = "the_night_mended"
-THE_OIL = "the_oil"
-THE_LIGHT_HELD = "the_light_held"
-WHO_CUT_THE_ROPE = "who_cut_the_rope"
-WHY_IT_RINGS = "why_it_rings"
-THE_NIGHT_MENDED = "the_night_mended"
 
 FACTS = {
     THE_BELL: {

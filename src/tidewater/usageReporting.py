@@ -115,8 +115,7 @@ def showNoticeOnce(config, output=None):
 
     Printed rather than shown through the front-end: this is a line for the
     person who launched the program, alongside the web front-end's URL, not
-    a screen in the game. Returns True on the call
-    that printed it.
+    a screen in the game. Returns True on the call that printed it.
 
     The marker is written into the save directory, which is the one place
     Tidewater already keeps state between runs. If it cannot be written the

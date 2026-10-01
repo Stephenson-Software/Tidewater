@@ -68,7 +68,7 @@ def isBrowserBuild():
 
 
 def readVersion(path=None):
-    """The version from version.txt (the one run.sh prints), or None.
+    """The version from version.txt, or None.
 
     None rather than a placeholder: an event without a version tag says
     "unknown" more honestly than a made-up string would."""
@@ -114,8 +114,8 @@ def showNoticeOnce(config, output=None):
     """Print the first-run notice unless the marker says it has been shown.
 
     Printed rather than shown through the front-end: this is a line for the
-    person who launched the program, alongside run.sh's version line and the
-    web front-end's URL, not a screen in the game. Returns True on the call
+    person who launched the program, alongside the web front-end's URL, not
+    a screen in the game. Returns True on the call
     that printed it.
 
     The marker is written into the save directory, which is the one place

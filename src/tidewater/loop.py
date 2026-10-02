@@ -1,7 +1,7 @@
 # @author Daniel McCoy Stephenson
 """The clock, the day's timetable, the endings, and the reset.
 
-Every action a scene offers costs an hour and goes through advance(). The
+Every action a scene offers that takes time goes through advance(). The
 timetable is fixed - it is the same day every time - and two of its entries
 are the whole game: the storm at nine, after which the docks can't be
 reached, and the bell at eleven, which ends the day. What an hour does when

@@ -1,2 +1,2 @@
-tak @ git+https://github.com/Stephenson-Software/tak@v0.2.0
+tak @ git+https://github.com/Stephenson-Software/tak@727d3ce10b19324d315b554da834132e8ab94cd9
 jsonschema

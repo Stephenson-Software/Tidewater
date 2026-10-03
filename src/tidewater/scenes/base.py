@@ -1,4 +1,5 @@
 # @author Daniel McCoy Stephenson
+from tidewater import achievements
 from tidewater.flags import LIGHT_HELD
 from tidewater.loop import stormRaging
 
@@ -73,6 +74,7 @@ class Scene:
         along with the rest of the day; that is the point. If a choice
         teaches something, that part is promoted to a fact separately."""
         self.ui.showDialogue("[%s will remember that.]" % who)
+        achievements.choiceRemembered()
 
     def talk(self, npc, choiceFlag=None):
         """Run a conversation; if it settled a choice this loop, say so."""

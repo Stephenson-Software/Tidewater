@@ -18,6 +18,7 @@ from tak.saves import (
 )
 from tak.ui import UIType, createUserInterface
 
+from tidewater import achievements
 from tidewater import loop as loopEngine
 from tidewater import premise, progression, scenes, usageReporting
 from tidewater.config import Config
@@ -106,6 +107,7 @@ class Tidewater:
                 self.prompt.text = "The docks again. What would you like to do?"
         # A loaded save may predate an unlock, or have earned one since.
         progression.catchUp(self.meta)
+        achievements.catchUp(self.meta)
         self.scenes = scenes.build(self)
         # A brand-new game opens on where you are and what day it is, once.
         self.showOpening = kind == "new" or (
@@ -117,12 +119,15 @@ class Tidewater:
         """Promote something to knowledge. Returns True if it was new."""
         if self.meta.learn(factId):
             self.loop.newFacts.append(factId)
+            achievements.factLearned(self.meta, factId)
             return True
         return False
 
     def advance(self, hours=1):
         """Move the clock and tell the player whatever happened."""
         outcome = loopEngine.advance(self, hours)
+        if outcome.ending:
+            achievements.endingReached(outcome.ending)
         if outcome.lines:
             self.ui.showDialogue("\n\n".join(outcome.lines))
         if outcome.reset:

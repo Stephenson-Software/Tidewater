@@ -56,6 +56,10 @@ The day is seeded, so the sea gives up the same fish to the same casts in every 
 
 Numbered slots under `data/` (or `TIDEWATER_SAVE_DIR`), one `save.json` each, validated against `schemas/save.json` on every load and save. A save that can't be read is listed as damaged, never overwritten, and copied aside if you open it anyway.
 
+## Achievements
+
+Played at [tidewater.play.danielstephenson.dev](https://tidewater.play.danielstephenson.dev) while signed in to arcade, Tidewater reports achievements through [`tak.arcade`](https://github.com/Stephenson-Software/tak#scores-and-achievements-on-arcade) (Stephenson-Software RFC 0014): a few of the important facts, every clue the village holds, a choice someone will remember, and each way out of the loop (one of them hidden). They are listed, with ids and descriptions, in `src/tidewater/achievements.py` and declared in the gateway's `config/play/boards.yaml`. Anywhere else — the console, signed out, another host — nothing is sent. Unlocks are never written to the save file; loading a save re-reports what it has already earned.
+
 ## Usage reporting
 
 Tidewater reports one `startup` event and one `save-loaded` event (program name and version only) to `trace.danielstephenson.dev`, on by default, and prints a one-line notice the first time an install does so. `TIDEWATER_USAGE_REPORTING_ENABLED=false`, `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turns it off, the browser build never reports, and what is collected and why is written up in the [trace client's README](https://github.com/Stephenson-Software/trace-client-python#turning-it-off).

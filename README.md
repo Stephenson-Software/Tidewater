@@ -1,5 +1,7 @@
 # Tidewater
 
+[![Play in your browser](https://img.shields.io/badge/Play-in%20your%20browser-2ea44f)](https://danielstephenson.dev/play/tidewater)
+
 *A day in a fishing village that will not end.*
 
 You wake on the docks at eight with a rod beside you. At nine in the evening a storm comes in off the water. At eleven the harbour bell rings — a bell that, Sam will tell you, has had no rope on it for thirty years — and you wake on the docks at eight.

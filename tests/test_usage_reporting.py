@@ -198,5 +198,6 @@ def test_an_enabled_start_reports_startup_and_notices_only_the_first_time(
     usageReporting.start(config, second)
     assert usageReporting.NOTICE in first.getvalue()
     assert second.getvalue() == ""
-    for client in fakeClient:
-        assert client.reports == [("startup", {"version": versionOnDisk()})]
+    assert [client.reports for client in fakeClient] == [
+        [("startup", {"version": versionOnDisk()})]
+    ] * 2

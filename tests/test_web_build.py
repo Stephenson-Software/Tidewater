@@ -14,6 +14,8 @@ def test_the_page_uses_the_kits_assets_and_names_the_game():
         assert asset in page, asset
     assert 'idbName: "tidewater-saves"' in page
     assert 'saveDirEnv: "TIDEWATER_SAVE_DIR"' in page
+    # Cloud saves (RFC 0016), only on arcade and only once a player turns them on.
+    assert "cloudSaves: true," in page
     assert 'entry: "web/pyodide_main.py"' in page
 
 

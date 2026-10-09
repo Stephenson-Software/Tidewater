@@ -58,6 +58,8 @@ The day is seeded, so the sea gives up the same fish to the same casts in every 
 
 Numbered slots under `data/` (or `TIDEWATER_SAVE_DIR`), one `save.json` each, validated against `schemas/save.json` on every load and save. A save that can't be read is listed as damaged, never overwritten, and copied aside if you open it anyway.
 
+In the browser the same slots live in the tab's IndexedDB (`tidewater-saves`), and the Saves panel can download them to a file and load them back in another browser. At [tidewater.play.danielstephenson.dev](https://tidewater.play.danielstephenson.dev), a player signed in to arcade can also turn on cloud backup there (`cloudSaves` in `web/index.html`, through tak's `cloud.js`, Stephenson-Software RFC 0016). It is off until they do, nothing is sent before then, and no other host loads it.
+
 ## Achievements
 
 Played at [tidewater.play.danielstephenson.dev](https://tidewater.play.danielstephenson.dev) while signed in to arcade, Tidewater reports achievements through [`tak.arcade`](https://github.com/Stephenson-Software/tak#scores-and-achievements-on-arcade) (Stephenson-Software RFC 0014): a few of the important facts, every clue the village holds, a choice someone will remember, and each way out of the loop (one of them hidden). They are listed, with ids and descriptions, in `src/tidewater/achievements.py` and declared in the gateway's `config/play/boards.yaml`. Anywhere else — the console, signed out, another host — nothing is sent. Unlocks are never written to the save file; loading a save re-reports what it has already earned.

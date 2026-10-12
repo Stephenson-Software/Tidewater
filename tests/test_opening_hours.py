@@ -4,6 +4,7 @@ offers open, and that waiting outside is still an hour of the day."""
 from tidewater.loop import BANK_CLOSE, BANK_OPEN, BELL_HOUR, SHOP_CLOSE, SHOP_OPEN
 from tidewater.scenes.bank import Bank
 from tidewater.scenes.shop import Shop
+from tidewater.state import START_HOUR
 from conftest import FakeGame, ScriptedUI
 
 
@@ -95,5 +96,5 @@ def test_waiting_into_the_bell_wakes_you_on_the_docks():
         game, _, result = visit(scene, BELL_HOUR - 1, ["Wait an hour"])
         assert result == "docks"
         assert game.loop.location == "docks"
-        assert game.loop.hour == 8
+        assert game.loop.hour == START_HOUR
         assert game.meta.loops == 2

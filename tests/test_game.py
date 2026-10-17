@@ -255,6 +255,44 @@ def test_a_damaged_save_is_copied_aside_and_started_fresh(scripted, tmp_path):
     assert game2.meta.loops == 1
 
 
+def test_loading_a_later_loop_catches_up_its_unlocks_silently(scripted):
+    game, ui = scripted(["Create New Save", "Quit"])
+    game.play()
+    path = game.saveFileManager.get_save_path("save.json")
+    # A save from before the unlocks were recorded: the rope is known and the
+    # loop has turned, but nothing has been granted.
+    with open(path, "w") as f:
+        json.dump(
+            {
+                "version": 1,
+                "meta": {"loops": 3, "facts": [facts.THE_ROPE], "unlocked": []},
+                "loop": {"hour": 8},
+            },
+            f,
+        )
+
+    game2, ui2 = scripted(["Load Slot 1", "Quit"])
+    game2.play()
+    assert game2.meta.unlocked == ["journal", "resolve"]
+    assert not any(text.startswith("[") for text in ui2.dialogues)
+    assert not game2.showOpening
+    assert ui2.menus[-1][3] == "The docks again. What would you like to do?"
+
+
+def test_slotMetadata_reads_the_save_menu_summary():
+    data = {"meta": {"loops": 4, "facts": ["a", "b"], "loopBroken": True}}
+    assert gameModule.slotMetadata("slot", data) == {
+        "loops": 4,
+        "known": 2,
+        "loopBroken": True,
+    }
+    assert gameModule.slotMetadata("slot", {}) == {
+        "loops": 1,
+        "known": 0,
+        "loopBroken": False,
+    }
+
+
 def test_describeSlot():
     assert describeSlot({"loops": 3, "known": 2}) == "Loop 3, 2 known"
     assert (

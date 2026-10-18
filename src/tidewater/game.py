@@ -18,7 +18,7 @@ from tak.saves import (
 )
 from tak.ui import UIType, createUserInterface
 
-from tidewater import achievements
+from tidewater import achievements, facts
 from tidewater import loop as loopEngine
 from tidewater import premise, progression, scenes, usageReporting
 from tidewater.config import Config
@@ -55,7 +55,8 @@ def slotMetadata(slotPath, data):
     meta = data.get("meta", {})
     return {
         "loops": meta.get("loops", 1),
-        "known": len(meta.get("facts", [])),
+        # Only the ids MetaState.fromDict keeps, so this matches the header.
+        "known": len([f for f in meta.get("facts", []) if f in facts.FACTS]),
         "loopBroken": meta.get("loopBroken", False),
     }
 

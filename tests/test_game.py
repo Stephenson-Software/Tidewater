@@ -8,6 +8,7 @@ from tak.ui import UIType
 from tidewater import facts
 from tidewater import game as gameModule
 from tidewater.game import Tidewater, describeSlot
+from tidewater.state import MetaState
 from conftest import ScriptedUI
 
 
@@ -280,12 +281,20 @@ def test_loading_a_later_loop_catches_up_its_unlocks_silently(scripted):
 
 
 def test_slotMetadata_reads_the_save_menu_summary():
-    data = {"meta": {"loops": 4, "facts": ["a", "b"], "loopBroken": True}}
+    data = {
+        "meta": {
+            "loops": 4,
+            "facts": ["the_bell", "the_storm", "a_retired_fact"],
+            "loopBroken": True,
+        }
+    }
     assert gameModule.slotMetadata("slot", data) == {
         "loops": 4,
         "known": 2,
         "loopBroken": True,
     }
+    # The same count the header shows once the save is loaded.
+    assert len(MetaState.fromDict(data["meta"]).facts) == 2
     assert gameModule.slotMetadata("slot", {}) == {
         "loops": 1,
         "known": 0,

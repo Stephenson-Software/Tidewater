@@ -38,6 +38,24 @@ def test_unknown_facts_in_a_save_are_dropped_on_load():
     assert meta.facts == [facts.THE_BELL]
 
 
+def test_unknown_facts_learned_today_are_dropped_on_load_and_the_bell_still_rings():
+    # The reset's "what you kept" summary titles every fact learned today, so
+    # a retired id left in the day's list would raise at eleven.
+    from tidewater.loop import BELL_HOUR, advance
+    from conftest import FakeGame
+
+    data = toSaveDict(MetaState(), LoopState())
+    data["meta"]["facts"] = ["retired_fact", facts.SAM_BELL]
+    data["loop"]["hour"] = BELL_HOUR - 1
+    data["loop"]["newFacts"] = ["retired_fact", facts.SAM_BELL]
+    game = FakeGame()
+    game.meta, game.loop = fromSaveDict(data)
+    assert game.loop.newFacts == [facts.SAM_BELL]
+    outcome = advance(game, 1)
+    assert outcome.reset and game.meta.loops == 2
+    assert "the bell has no rope" in "\n".join(outcome.lines)
+
+
 def test_the_day_is_the_same_day_every_loop():
     # Same seed, same draws: a player who does the same thing sees the same
     # thing. That is how the loop announces itself without a word.

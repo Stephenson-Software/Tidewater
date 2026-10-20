@@ -135,7 +135,8 @@ class LoopState:
         loop.location = data.get("location", START_LOCATION)
         loop.items = list(data.get("items", []))
         loop.flags = dict(data.get("flags", {}))
-        loop.newFacts = list(data.get("newFacts", []))
+        # The same ids MetaState.fromDict keeps: the reset titles each one.
+        loop.newFacts = [f for f in data.get("newFacts", []) if f in facts.FACTS]
         loop.rngDraws = data.get("rngDraws", 0)
         return loop
 

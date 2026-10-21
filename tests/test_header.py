@@ -1,6 +1,7 @@
 from tidewater import facts
 from tidewater.header import buildHeader
-from tidewater.loop import ROPE_HUNG, STORM_HOUR
+from tidewater.loop import ENDING_LIGHT, ROPE_HUNG, STORM_HOUR
+from tidewater.state import MetaState
 from conftest import FakeGame
 
 
@@ -40,6 +41,16 @@ def test_after_the_bell_the_header_counts_days():
     header = buildHeader(game)
     assert header["chips"][0] == "Day 3 after the bell"
     assert header["title"] == "Tidewater - Day 3 after the bell"
+
+
+def test_an_unknown_ending_in_a_save_is_skipped_rather_than_crashing():
+    game = FakeGame()
+    game.meta.loopBroken = True
+    game.meta.endings = [ENDING_LIGHT, "tide"]
+    game.meta = MetaState.fromDict(game.meta.toDict())
+    assert buildHeader(game)["chips"][0] == "Day 1 after the light"
+    game.meta.endings = ["tide"]
+    assert buildHeader(game)["chips"][0] == "Day 1 after the bell"
 
 
 def test_an_unknown_location_shows_blank_rather_than_crashing():

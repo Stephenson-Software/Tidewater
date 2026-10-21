@@ -47,10 +47,13 @@ ENDING_NAMES = {
 
 def endingName(meta):
     """What broke the loop, for the morning after. A save that says the loop
-    is broken but records no ending predates the second one: it was the bell."""
-    if not meta.endings:
+    is broken but records no ending predates the second one: it was the bell.
+    An id this build has no name for (a newer build's ending, a hand-edited
+    save) is skipped, the way the save's unknown facts are."""
+    known = [e for e in meta.endings if e in ENDING_NAMES]
+    if not known:
         return ENDING_NAMES[ENDING_BELL]
-    return ENDING_NAMES[meta.endings[-1]]
+    return ENDING_NAMES[known[-1]]
 
 
 def bankOpen(hour):

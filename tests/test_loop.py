@@ -1,4 +1,4 @@
-from tidewater import facts
+from tidewater import facts, flags
 from tidewater import loop as engine
 from tidewater.loop import BELL_HOUR, ROPE_HUNG, STORM_HOUR, advance, timetable
 from conftest import FakeGame
@@ -95,3 +95,51 @@ def test_opening_hours():
     assert engine.shopOpen(8) and not engine.shopOpen(18)
     assert not engine.tavernOpen(17) and engine.tavernOpen(18)
     assert engine.samAtDocks(16) and not engine.samAtDocks(17)
+
+
+def test_the_morning_after_counts_in_ordinals():
+    expected = {
+        1: "1st",
+        2: "2nd",
+        3: "3rd",
+        4: "4th",
+        11: "11th",
+        12: "12th",
+        13: "13th",
+        21: "21st",
+        22: "22nd",
+        23: "23rd",
+        101: "101st",
+        111: "111th",
+        112: "112th",
+    }
+    assert {n: engine._ordinal(n) for n in expected} == expected
+
+
+def test_a_rope_hung_after_the_loop_is_broken_rings_nothing():
+    game = FakeGame()
+    game.meta.loopBroken = True
+    game.meta.endings.append(engine.ENDING_LIGHT)
+    game.loop.flags[ROPE_HUNG] = True
+    outcome = advance(game, BELL_HOUR - 8)
+    assert outcome.reset and outcome.ending is None
+    assert game.meta.endings == [engine.ENDING_LIGHT]
+    assert game.meta.days == 1
+    assert not game.meta.knows(facts.LOOP_BROKEN)
+    assert "1st since the light" in "\n".join(outcome.lines)
+
+
+def test_both_halves_done_after_the_loop_is_broken_mend_nothing():
+    game = FakeGame()
+    game.meta.loopBroken = True
+    game.meta.endings.append(engine.ENDING_BELL)
+    game.loop.flags[ROPE_HUNG] = True
+    game.loop.flags[engine.LAMP_LIT] = True
+    outcome = advance(game, STORM_HOUR - 8)
+    assert not game.loop.flags.get(flags.LIGHT_HELD)
+    assert not game.meta.knows(facts.THE_LIGHT_HELD)
+    outcome = advance(game, BELL_HOUR - STORM_HOUR)
+    assert outcome.reset and outcome.ending is None
+    assert game.meta.endings == [engine.ENDING_BELL]
+    assert not game.meta.knows(facts.THE_NIGHT_MENDED)
+    assert game.meta.days == 1

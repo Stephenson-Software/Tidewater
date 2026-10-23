@@ -2,6 +2,7 @@
 from tidewater import facts, villagers
 from tidewater.flags import HURRIED_ADA, LAMP_LIT, LIGHT_HELD
 from tidewater.loop import (
+    BELL_HOUR,
     KEEPER_LEAVES_DOCKS,
     STORM_HOUR,
     lighthouseOpen,
@@ -23,10 +24,11 @@ class Lighthouse(Scene):
     def descriptor(self):
         hour = self.loop.hour
         if stormRaging(hour) and self.loop.flags.get(LIGHT_HELD):
+            left = BELL_HOUR - hour
             return (
                 "The lamp room in the storm. Spray on the glass, the beam going "
                 "round, and below it the front lit all the way to the tower. "
-                "Two hours to eleven."
+                "%s to eleven." % ("An hour" if left == 1 else "Two hours")
             )
         if lighthouseOpen(hour) and self.loop.flags.get(LAMP_LIT):
             return (

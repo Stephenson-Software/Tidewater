@@ -1,3 +1,4 @@
+import ast
 import os
 import subprocess
 import sys
@@ -40,6 +41,35 @@ def test_the_bundle_carries_the_game_and_the_kit(tmp_path):
         "version.txt",
     ):
         assert required in names, required
+
+
+def _bundledPaths():
+    """Every path web/build_zip.py hands to the bundle, read from its source."""
+    with open(os.path.join(REPOSITORY_ROOT, "web", "build_zip.py")) as f:
+        tree = ast.parse(f.read())
+    call = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call) and getattr(node.func, "id", None) == "build"
+    )
+    paths = []
+    for keyword in call.keywords:
+        if keyword.arg in ("sourceDirectories", "extraFiles"):
+            paths.extend(ast.literal_eval(keyword.value))
+    return paths
+
+
+def test_the_docker_image_copies_everything_the_bundle_carries():
+    with open(os.path.join(REPOSITORY_ROOT, "Dockerfile")) as f:
+        copied = [
+            line.split()[1].rstrip("/")
+            for line in f
+            if line.startswith("COPY ") and "requirements.txt" not in line
+        ]
+    paths = _bundledPaths()
+    assert "pictures" in paths and "art/stills.json" in paths
+    for path in paths:
+        assert any(path == each or path.startswith(each + "/") for each in copied), path
 
 
 def test_build_zip_script_runs(tmp_path):

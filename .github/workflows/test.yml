@@ -51,3 +51,6 @@ jobs:
         curl -fsS http://127.0.0.1:8080/tak/client.js | grep -q TakClient
         curl -fsSI http://127.0.0.1:8080/web/game.zip | grep -q '200'
         docker stop tidewater
+    - name: The image's bundle carries the location stills
+      run: |
+        docker run --rm tidewater python3 -c "import zipfile; n=set(zipfile.ZipFile('web/game.zip').namelist()); assert 'art/stills.json' in n and any(x.startswith('pictures/') and x.endswith('.png') for x in n), sorted(n)"

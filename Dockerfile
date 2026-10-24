@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends git \
 COPY src/ ./src/
 COPY web/ ./web/
 COPY schemas/ ./schemas/
+# The location stills and the manifest naming them (RFC 0025). The bundle
+# skips a missing directory silently, so without these the browser build
+# would simply show no pictures.
+COPY pictures/ ./pictures/
+COPY art/stills.json ./art/
 COPY version.txt ./
 
 # Bundle the game for the browser to download. Built here rather than checked

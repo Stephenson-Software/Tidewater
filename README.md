@@ -68,6 +68,22 @@ Played at [tidewater.play.danielstephenson.dev](https://tidewater.play.danielste
 
 Tidewater reports one `startup` event and one `save-loaded` event (program name and version only) to `trace.danielstephenson.dev`, on by default, and prints a one-line notice the first time an install does so. `TIDEWATER_USAGE_REPORTING_ENABLED=false`, `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turns it off, the browser build never reports, and what is collected and why is written up in the [trace client's README](https://github.com/Stephenson-Software/trace-client-python#turning-it-off).
 
+## Location stills (provisional)
+
+In the browser, each of the seven places has one picture above its menu, rendered offline with the [Strata](https://github.com/Preponderous-Software/strata) engine from a scene file in `art/` and shipped as a PNG in `pictures/` inside the browser bundle. The console is unchanged: it shows no pictures.
+
+![A place's still above its menu in the browser](docs/images/stills/web-desktop-2.png)
+
+**The setting and the art are a provisional first pass** (a late-September day at 54.5° N, flat-coloured shapes, no people drawn), recorded as provisional in [`art/stills.json`](art/stills.json) with the reasoning for each choice. All of it, the alt text included, is the author's to change. [All the stills](docs/images/stills/contact-sheet.png).
+
+To re-render after editing a scene or the manifest, build Strata's `strata-golden` tool at the tag `art/stills.json` names (see the top of `art/render.py`), then:
+
+```bash
+uv run --with pillow python art/render.py --strata-golden /path/to/strata-golden
+```
+
+The script places the sun from each still's date, time and place, and refuses to render a still whose sun is not filled in. The PNGs are committed, and `tests/test_stills.py` holds them to the manifest's size budget.
+
 ## Development
 
 ```bash

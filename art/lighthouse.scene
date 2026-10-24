@@ -1,0 +1,8 @@
+# Tidewater - the lighthouse on the point, "the whole village laid out below
+# like a map" from its lamp room. Seen from the headland path in the last of
+# the light. No figures are drawn. Provisional art (RFC 0025): see stills.json.
+size 640 360
+camera -106 4.2 34  -84 11 54  60 0.3 500
+lighting sun 0.5 54 4 2048 150 0.6 1
+clear 0 0 0 1 sky
+include _village.scene

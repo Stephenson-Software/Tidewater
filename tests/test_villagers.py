@@ -68,3 +68,66 @@ def test_tom_knows_when_the_rope_is_already_hung():
     tom = villagers.oldTom(game)
     line = tom.get_dialogue_response(questions(tom).index("I know about the Marigold."))
     assert "hung" in line and game.loop.items == []
+
+
+def test_sam_also_says_there_is_no_rope_when_asked_about_last_night():
+    game = FakeGame()
+    game.learn(facts.THE_BELL)
+    sam = villagers.sam(game)
+    line = sam.get_dialogue_response(
+        questions(sam).index("Did you hear the bell last night?")
+    )
+    assert "no rope" in line
+    assert game.meta.knows(facts.SAM_BELL)
+
+
+def test_gilbert_asks_after_the_oil_once_the_can_is_bought():
+    from tidewater.flags import LAMP_LIT
+
+    game = FakeGame()
+    assert "About the oil." not in questions(villagers.gilbert(game))
+    game.loop.items.append(villagers.OIL)
+    gilbert = villagers.gilbert(game)
+    assert "Go on up" in gilbert.get_dialogue_response(
+        questions(gilbert).index("About the oil.")
+    )
+    game.loop.items.remove(villagers.OIL)
+    game.loop.flags[LAMP_LIT] = True
+    gilbert = villagers.gilbert(game)
+    assert "So it is" in gilbert.get_dialogue_response(
+        questions(gilbert).index("About the oil.")
+    )
+
+
+def test_leaving_the_dead_alone_is_a_choice_tom_holds_you_to():
+    from tidewater.flags import TOLD_TOM_OF_NELL
+
+    game = FakeGame()
+    game.learn(facts.MARIGOLD)
+    game.learn(facts.THE_HANDS)
+    game.loop.items.append(villagers.ROPE)
+    tom = villagers.oldTom(game)
+    assert "I found Nell's stone." in questions(tom)
+    tom.get_dialogue_response(questions(tom).index("(Leave the dead alone.)"))
+    assert game.loop.flags[TOLD_TOM_OF_NELL] is False
+    remaining = questions(villagers.oldTom(game))
+    assert "I found Nell's stone." not in remaining
+    assert "(Leave the dead alone.)" not in remaining
+
+
+def test_ada_waits_on_the_oil_until_the_lamp_is_lit():
+    from tidewater.flags import LAMP_LIT
+
+    game = FakeGame()
+    assert "I've a can of oil for the lamp." not in questions(villagers.ada(game))
+    game.loop.items.append(villagers.OIL)
+    ada = villagers.ada(game)
+    assert "Before nine" in ada.get_dialogue_response(
+        questions(ada).index("I've a can of oil for the lamp.")
+    )
+    game.loop.items.remove(villagers.OIL)
+    game.loop.flags[LAMP_LIT] = True
+    ada = villagers.ada(game)
+    assert "nine o'clock" in ada.get_dialogue_response(
+        questions(ada).index("I've a can of oil for the lamp.")
+    )

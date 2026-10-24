@@ -1,0 +1,10 @@
+# Tidewater - the churchyard, above the village. "Rows of names you don't
+# know", the church, and the harbour below. No figures are drawn.
+# Provisional art (RFC 0025): see stills.json.
+size 640 360
+camera 53 10.3 -43  26 12.5 -54  64 0.3 500
+lighting sun 0.5 54 4 2048 120 0.6 1
+clear 0 0 0 1 sky
+include _village.scene
+# a rake left against the wall
+item cube 47 8.2 -40.4  0.05 1.6 0.05  0.45 0.32 0.18

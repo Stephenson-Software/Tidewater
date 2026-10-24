@@ -1,0 +1,105 @@
+{
+  "provisional": true,
+  "note": "PROVISIONAL. Chosen by Claude to render a first pass under RFC 0025, not by the author. The setting (place, date, year), the art direction and every alt line below are the author's to change; the game's own text fixes none of them.",
+  "setting": {
+    "place": "The village is fictional. Rendered on a south-facing harbour at 54.5 N, 0.6 W, UTC+1.",
+    "date": "The loop's one day, rendered as 2023-09-21. The text names no season or year; both are arbitrary.",
+    "why": [
+      "The day runs from waking on the docks at 08:00 to the storm at 21:00 and the bell at 23:00 (state.py, loop.py). On this date sunrise is about 07:00 and sunset about 19:05, so the morning still has a low sun and the storm comes after dark.",
+      "Each still's hour is one at which the place is open in the game (the tavern in the evening, the bank and shop in the day)."
+    ]
+  },
+  "strata": "v0.4.0",
+  "size": [
+    640,
+    360
+  ],
+  "budgetBytes": 524288,
+  "artDirection": "Flat-coloured Strata primitives, no textures; one still per location; no people drawn (the characters are written, not drawn - RFC 0025 non-goal).",
+  "stills": {
+    "docks": {
+      "scene": "art/docks.scene",
+      "hour": "08:00",
+      "alt": "The docks at eight in the morning: a wooden pier on piles running out over the harbour with boats moored along it, and the stone bell tower standing at its far end.",
+      "sun": {
+        "date": "2023-09-21",
+        "time": "08:00",
+        "utcOffset": 1,
+        "latitude": 54.5,
+        "longitude": -0.6
+      }
+    },
+    "shop": {
+      "scene": "art/shop.scene",
+      "hour": "10:00",
+      "alt": "Gilbert's shop, seen from above with its roof away: a long counter with a till, shelves of lamp-oil cans and boxes of hooks, coils of rope on the wall and floor, and a barrel of salt.",
+      "sun": {
+        "date": "2023-09-21",
+        "time": "10:00",
+        "utcOffset": 1,
+        "latitude": 54.5,
+        "longitude": -0.6
+      }
+    },
+    "home": {
+      "scene": "art/home.scene",
+      "hour": "13:00",
+      "alt": "Home, seen from above with its roof away: a bunk with the bed made, a cold stove with a kettle, a table and chair, and a window on the harbour.",
+      "sun": {
+        "date": "2023-09-21",
+        "time": "13:00",
+        "utcOffset": 1,
+        "latitude": 54.5,
+        "longitude": -0.6
+      }
+    },
+    "tavern": {
+      "scene": "art/tavern.scene",
+      "hour": "20:00",
+      "alt": "The tavern after dark, seen from above with its roof away: a fire in the hearth, a bar with taps and bottles under a lamp, and round tables with stools and tankards.",
+      "sun": {
+        "date": "2023-09-21",
+        "time": "20:00",
+        "utcOffset": 1,
+        "latitude": 54.5,
+        "longitude": -0.6
+      }
+    },
+    "bank": {
+      "scene": "art/bank.scene",
+      "hour": "11:00",
+      "alt": "The bank, seen from above with its roof away: a panelled counter behind a brass grille with a ledger open on it, a green safe in the corner, and a clock on the wall.",
+      "sun": {
+        "date": "2023-09-21",
+        "time": "11:00",
+        "utcOffset": 1,
+        "latitude": 54.5,
+        "longitude": -0.6
+      }
+    },
+    "lighthouse": {
+      "scene": "art/lighthouse.scene",
+      "hour": "18:30",
+      "alt": "The lighthouse on the point at dusk: a white tower with a red band and a glass lamp room on a grassy headland, against an orange evening sky.",
+      "sun": {
+        "date": "2023-09-21",
+        "time": "18:30",
+        "utcOffset": 1,
+        "latitude": 54.5,
+        "longitude": -0.6
+      }
+    },
+    "churchyard": {
+      "scene": "art/churchyard.scene",
+      "hour": "16:00",
+      "alt": "The churchyard above the village in the afternoon: grey headstones in the grass, a low wall, the stone church and its tower, and the village roofs and the harbour below.",
+      "sun": {
+        "date": "2023-09-21",
+        "time": "16:00",
+        "utcOffset": 1,
+        "latitude": 54.5,
+        "longitude": -0.6
+      }
+    }
+  }
+}

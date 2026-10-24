@@ -20,7 +20,7 @@ from tak.ui import UIType, createUserInterface
 
 from tidewater import achievements, facts
 from tidewater import loop as loopEngine
-from tidewater import premise, progression, scenes, usageReporting
+from tidewater import premise, progression, scenes, stills, usageReporting
 from tidewater.config import Config
 from tidewater.header import buildHeader
 from tidewater.state import (
@@ -86,6 +86,8 @@ class Tidewater:
             tagline=TAGLINE,
             envPrefix=ENV_PREFIX,
         )
+        # The picture over each place's menu in the browser (RFC 0025).
+        self.stillAlts = stills.load()
 
         chosen = chooseSlot(
             self.ui, self.saveFileManager, TITLE + " - Save Files", describeSlot
@@ -157,6 +159,7 @@ class Tidewater:
             current = self.loop.location
             if current not in self.scenes:
                 current = self.loop.location = "docks"
+            stills.show(self.ui, current, self.stillAlts)
             nextScene = self.scenes[current].run()
             self.save()
             if nextScene == scenes.QUIT:

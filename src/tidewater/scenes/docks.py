@@ -17,6 +17,11 @@ CATCHES = [
     "a sea bass, the best of the day",
 ]
 
+ADA_AT_DAWN = (
+    "Ada from the lighthouse is walking the front with the lamp's oil can, as "
+    "she does at dawn."
+)
+
 
 class Docks(Scene):
     id = "docks"
@@ -35,17 +40,22 @@ class Docks(Scene):
         # the fact the first reset leaves behind, and "Again." belongs to
         # someone who has heard it.
         if hour == 8 and not self.meta.knows(facts.THE_BELL):
-            return (
+            morning = (
                 "You wake on the docks with a rod beside you and the whole sea in "
                 "front of you. It's eight in the morning."
             )
-        if hour == 8:
-            return "The docks, eight in the morning. Again."
+        elif hour == 8:
+            morning = "The docks, eight in the morning. Again."
+        else:
+            morning = None
+        # Ada is only on the front at dawn, so the morning has to say so or
+        # "Talk to Ada" is a row nothing in the scene explains.
         if keeperAtDocks(hour):
-            return (
-                "The docks. Sam is at the nets, and Ada from the lighthouse is "
-                "walking the front with the lamp's oil can, as she does at dawn."
-            )
+            if morning:
+                return "%s %s" % (morning, ADA_AT_DAWN)
+            return "The docks. Sam is at the nets, and %s" % ADA_AT_DAWN
+        if morning:
+            return morning
         if samAtDocks(hour):
             return "The docks. Sam is at the nets. The bell tower stands at the end of the pier."
         return "The docks, empty but for the gulls. The bell tower stands at the end of the pier."

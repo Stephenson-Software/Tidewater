@@ -98,7 +98,24 @@ def test_the_docks_say_again_once_the_bell_is_known_not_once_the_counter_moves()
     # And knowing the bell is enough on its own, whatever the counter says.
     game.meta.loops = 1
     game.learn(facts.THE_BELL)
-    assert docks.descriptor() == "The docks, eight in the morning. Again."
+    assert docks.descriptor().startswith("The docks, eight in the morning. Again.")
+
+
+def test_the_docks_say_ada_is_there_at_eight_and_not_at_nine():
+    from tidewater.scenes.docks import Docks
+
+    # Eight is the only hour "Talk to Ada" is on the docks menu, so it is the
+    # hour the scene has to say she is there - on the first morning and after.
+    game = FakeGame()
+    docks = Docks(game)
+    assert "Ada from the lighthouse" in docks.descriptor()
+    game.learn(facts.THE_BELL)
+    assert docks.descriptor() == (
+        "The docks, eight in the morning. Again. Ada from the lighthouse is "
+        "walking the front with the lamp's oil can, as she does at dawn."
+    )
+    game.loop.hour = KEEPER_LEAVES_DOCKS
+    assert "Ada" not in docks.descriptor()
 
 
 def test_no_scene_or_villager_compares_the_loop_counter():
@@ -281,3 +298,41 @@ def test_the_churchyard_rows_only_read_once_you_know_the_name():
     Churchyard(game).run()
     assert game.meta.knows(facts.THE_HANDS)
     assert ui.saw("Nell Reade")
+
+
+def test_talking_to_hesketh_from_the_churchyard_costs_an_hour():
+    from tidewater.scenes.churchyard import Churchyard
+
+    game = FakeGame()
+    game.loop.location = "churchyard"
+    game.learn(facts.MARIGOLD)
+    ui = ScriptedUI(["Talk to Hesketh", "Marigold's crew", "[Back]"])
+    game.ui = ui
+    assert Churchyard(game).run() == "churchyard"
+    assert ui.saw("Hesketh: By the wall")
+    assert game.meta.knows(facts.THE_HANDS)
+    assert game.loop.hour == 9
+
+
+def test_waiting_in_the_churchyard_passes_an_hour():
+    from tidewater.scenes.churchyard import Churchyard
+
+    game = FakeGame()
+    game.loop.location = "churchyard"
+    game.ui = ScriptedUI(["Wait an hour"])
+    assert Churchyard(game).run() == "churchyard"
+    assert game.prompt.text == "An hour passes."
+    assert game.loop.hour == 9
+
+
+def test_the_bell_takes_you_from_the_churchyard_back_to_the_docks():
+    from tidewater.loop import BELL_HOUR
+    from tidewater.scenes.churchyard import Churchyard
+
+    game = FakeGame()
+    game.loop.location = "churchyard"
+    game.loop.hour = BELL_HOUR - 1
+    game.ui = ScriptedUI(["Wait an hour"])
+    assert Churchyard(game).run() == "docks"
+    assert game.meta.loops == 2
+    assert game.loop.location == "docks"

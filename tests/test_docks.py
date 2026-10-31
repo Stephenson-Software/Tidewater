@@ -4,7 +4,7 @@ player."""
 
 from tidewater import facts, villagers
 from tidewater.flags import ROPE_HUNG
-from tidewater.loop import BELL_HOUR, KEEPER_LEAVES_DOCKS, SAM_LEAVES, STORM_HOUR
+from tidewater.loop import KEEPER_LEAVES_DOCKS, SAM_LEAVES, STORM_HOUR
 from tidewater.scenes.docks import CATCHES, Docks
 from conftest import FakeGame, ScriptedUI
 

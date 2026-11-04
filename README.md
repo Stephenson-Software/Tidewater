@@ -50,7 +50,7 @@ The state is in two tiers, which is the whole design:
 | `MetaState` | loops, facts (and the loop each was learned in), unlocks, endings, the days since the loop broke | kept |
 | `LoopState` | the hour, where you are, what you carry, what happened today (its `flags`, every one named in `flags.py`) | thrown away |
 
-An ending is a row in `loop.py`'s `ENDINGS` table — an hour, a flag, a handler — and the clock consults the table each hour. The light fires at nine and the bell at eleven, so a player who has done both leaves by the light.
+An ending is a row in `loop.py`'s `ENDINGS` table — an hour, a flag, a handler, and optionally a flag that stands it down — and the clock consults the table each hour. The light fires at nine and the bell at eleven, but the light's row stands down when the rope is hung too, so a player who has done both does not leave by the light: it holds at nine, and the bell at eleven closes the night.
 
 The day is seeded, so the sea gives up the same fish to the same casts in every loop. A player who changes nothing sees nothing change.
 

@@ -131,3 +131,32 @@ def test_ada_waits_on_the_oil_until_the_lamp_is_lit():
     assert "nine o'clock" in ada.get_dialogue_response(
         questions(ada).index("I've a can of oil for the lamp.")
     )
+
+
+def test_the_keepers_journal_line_is_what_ada_said_and_leaves_the_oil_unanswered():
+    game = FakeGame()
+    game.learn(facts.MARIGOLD)
+    ada = villagers.ada(game)
+    told = ada.get_dialogue_response(
+        questions(ada).index("You'd have seen the Marigold go down.")
+    )
+    assert "till my arms went" in told
+    journal = facts.text(facts.KEEPER_SAW)
+    assert "till her arms went" in journal
+    # How long the lamp lasted is the next question on her menu, and THE_OIL's
+    # answer is nine: the journal must not have settled it already.
+    assert "dawn" not in journal
+    assert "gone by nine" in facts.text(facts.THE_OIL)
+
+
+def test_the_other_boats_journal_line_names_the_hands_margaret_named():
+    game = FakeGame()
+    game.learn(facts.MARIGOLD)
+    margaret = villagers.margaret(game)
+    told = margaret.get_dialogue_response(
+        questions(margaret).index("Were there other boats?")
+    )
+    assert "in my father's hand, and his father's" in told
+    journal = facts.text(facts.OTHER_BOATS)
+    assert "her father's hand or his father's" in journal
+    assert "same hand" not in journal

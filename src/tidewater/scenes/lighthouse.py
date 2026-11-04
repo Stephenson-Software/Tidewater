@@ -16,7 +16,7 @@ class Lighthouse(Scene):
 
     Her story about the night is the village's one line that costs patience:
     ask her straight and she gives you the short answer and nothing more
-    today; let her tell it and it takes the hour but goes in the journal."""
+    today; let her tell it and it takes two hours but goes in the journal."""
 
     id = "lighthouse"
     travelTo = ("docks", "shop", "home", "tavern", "bank", "churchyard")

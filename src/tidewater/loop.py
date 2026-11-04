@@ -132,8 +132,8 @@ class Outcome:
     """What an advance() had to say, and whether the day ended.
 
     lines are shown to the player in order. reset is True when the loop came
-    round (the scene should send the player back to the docks); ending is set
-    when the bell rang for real."""
+    round (the scene should send the player back to the docks); ending is the
+    id of the ending when the loop was broken, and None otherwise."""
 
     def __init__(self):
         self.lines = []

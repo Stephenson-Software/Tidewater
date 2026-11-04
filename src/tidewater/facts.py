@@ -141,9 +141,9 @@ FACTS = {
     KEEPER_SAW: {
         "title": "What the keeper saw",
         "text": "Ada keeps the light on the point. The night the Marigold went "
-        "down she was in the lamp room and swung the lamp till dawn, and "
-        "from up there she could see the whole front. Nobody came to the "
-        "tower. Nobody rang anything.",
+        "down she was in the lamp room and swung the lamp till her arms "
+        "went, and from up there she could see the whole front. Nobody came "
+        "to the tower. Nobody rang anything.",
         "leads": [
             {
                 "to": THE_HANDS,
@@ -161,8 +161,8 @@ FACTS = {
         "title": "The other boats",
         "text": "Margaret's older ledgers: the Kestrel in '91, the Two Sisters "
         "in '02, the Provider in '19 - every boat the village lost, and "
-        "beside each one, in the same hand, 'bell rung'. Only the Marigold's "
-        "page says otherwise.",
+        "beside each one, in her father's hand or his father's, 'bell rung'. "
+        "Only the Marigold's page says otherwise.",
         "leads": [
             {
                 "to": THE_HANDS,

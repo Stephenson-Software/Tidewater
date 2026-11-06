@@ -72,6 +72,21 @@ def test_after_nine_the_lamp_room_offers_no_ada_rows_and_no_wait_for_nine():
     assert "Wait in the lamp room for nine" not in labels(game.ui)
 
 
+def test_a_lamp_lit_after_the_loop_is_broken_keeps_the_player_through_the_storm():
+    game = atTheLighthouse(STORM_HOUR - 1, ["Wait an hour"])
+    game.meta.loopBroken = True
+    game.meta.endings.append("light")
+    game.loop.flags[LAMP_LIT] = True
+    assert Lighthouse(game).run() == "lighthouse"
+    assert game.loop.hour == STORM_HOUR
+    assert not game.loop.flags.get(LIGHT_HELD)
+    assert not game.ui.saw("Ada shutters the lamp room")
+    # What it says now, not what it should say: see #58.
+    assert Lighthouse(game).descriptor() == (
+        "The lighthouse, shuttered against the weather."
+    )
+
+
 def test_the_held_light_counts_down_to_the_bell():
     game = atTheLighthouse(STORM_HOUR)
     game.loop.flags[LAMP_LIT] = True

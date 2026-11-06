@@ -95,6 +95,9 @@ def test_saying_the_stone_shows_the_beat_once_and_the_choice_is_gone():
     Tavern(game).run()
     assert SETTLED not in game.ui.dialogues
     assert game.ui.saw("Don't ask me about it.")
+    offered = [label for menu in game.ui.menus for label in menu[1]]
+    assert any("You were a fisherman?" in label for label in offered)
+    assert not any("Nell's stone" in label for label in offered)
 
 
 def test_leaving_the_dead_alone_is_a_choice_he_holds_you_to_as_well():

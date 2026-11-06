@@ -325,6 +325,16 @@ def test_waiting_in_the_churchyard_passes_an_hour():
     assert game.loop.hour == 9
 
 
+def test_quitting_from_the_churchyard_costs_no_time():
+    from tidewater.scenes.churchyard import Churchyard
+
+    game = FakeGame()
+    game.loop.location = "churchyard"
+    game.ui = ScriptedUI(["Quit"])
+    assert Churchyard(game).run() == "quit"
+    assert game.loop.hour == 8
+
+
 def test_the_bell_takes_you_from_the_churchyard_back_to_the_docks():
     from tidewater.loop import BELL_HOUR
     from tidewater.scenes.churchyard import Churchyard

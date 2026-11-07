@@ -30,6 +30,14 @@ class Lighthouse(Scene):
                 "round, and below it the front lit all the way to the tower. "
                 "%s to eleven." % ("An hour" if left == 1 else "Two hours")
             )
+        if stormRaging(hour) and self.loop.flags.get(LAMP_LIT):
+            # Only an ordinary day gets here: while the loop holds, a lit lamp
+            # at nine either ends the day or sets LIGHT_HELD.
+            return (
+                "The lamp room in the storm. Spray on the glass and the beam "
+                "going round over empty water. An ordinary storm, an ordinary "
+                "night, and the lamp burning because you lit it."
+            )
         if lighthouseOpen(hour) and self.loop.flags.get(LAMP_LIT):
             return (
                 "The lamp room. The lamp is lit and turning, hours early, and "

@@ -59,6 +59,9 @@ def test_the_storm_sends_a_player_with_a_dark_lamp_home():
     assert Lighthouse(game).run() == "home"
     assert game.loop.location == "home"
     assert game.ui.saw("Ada shutters the lamp room")
+    assert Lighthouse(game).descriptor() == (
+        "The lighthouse, shuttered against the weather."
+    )
 
 
 def test_after_nine_the_lamp_room_offers_no_ada_rows_and_no_wait_for_nine():
@@ -81,10 +84,12 @@ def test_a_lamp_lit_after_the_loop_is_broken_keeps_the_player_through_the_storm(
     assert game.loop.hour == STORM_HOUR
     assert not game.loop.flags.get(LIGHT_HELD)
     assert not game.ui.saw("Ada shutters the lamp room")
-    # What it says now, not what it should say: see #58.
-    assert Lighthouse(game).descriptor() == (
-        "The lighthouse, shuttered against the weather."
-    )
+    descriptor = Lighthouse(game).descriptor()
+    assert descriptor.startswith("The lamp room in the storm.")
+    assert "the lamp burning because you lit it" in descriptor
+    # An ordinary night has no bell to count down to.
+    assert "to eleven" not in descriptor
+    assert "shuttered" not in descriptor
 
 
 def test_the_held_light_counts_down_to_the_bell():

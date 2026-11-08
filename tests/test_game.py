@@ -256,6 +256,50 @@ def test_a_damaged_save_is_copied_aside_and_started_fresh(scripted, tmp_path):
     assert game2.meta.loops == 1
 
 
+def test_a_damaged_save_that_cannot_be_copied_says_so(scripted, monkeypatch):
+    game, ui = scripted(["Create New Save", "Quit"])
+    game.play()
+    path = game.saveFileManager.get_save_path("save.json")
+    with open(path, "w") as f:
+        f.write(
+            '{"version": 1, "meta": {"loops": 0, "facts": []}, "loop": {"hour": 8}}'
+        )  # loops < 1
+
+    def refuse(src, dst):
+        raise OSError("read-only")
+
+    monkeypatch.setattr(gameModule.shutil, "copy2", refuse)
+    game2, ui2 = scripted(["Load Slot 1", "Quit"])
+    game2.play()
+    assert ui2.saw("could not be read")
+    assert ui2.saw("It could not be copied aside.")
+    assert not ui2.saw("A copy was kept at")
+    assert not any(
+        name.startswith("save.json.damaged-")
+        for name in os.listdir(os.path.dirname(path))
+    )
+    assert game2.meta.loops == 1
+
+
+def test_a_save_in_an_unknown_place_wakes_on_the_docks(scripted):
+    game, ui = scripted(["Create New Save", "Quit"])
+    game.play()
+    path = game.saveFileManager.get_save_path("save.json")
+    with open(path, encoding="utf-8") as saveFile:
+        data = json.load(saveFile)
+    data["loop"]["location"] = "the old mill"  # a string the schema allows
+    with open(path, "w", encoding="utf-8") as saveFile:
+        json.dump(data, saveFile)
+
+    game2, ui2 = scripted(["Load Slot 1", "Quit"])
+    game2.play()
+    assert game2.failedLoad is None
+    assert game2.loop.location == "docks"
+    assert ui2.menus[1][0].startswith("You wake on the docks")
+    with open(path, encoding="utf-8") as saveFile:
+        assert json.load(saveFile)["loop"]["location"] == "docks"
+
+
 def test_loading_a_later_loop_catches_up_its_unlocks_silently(scripted):
     game, ui = scripted(["Create New Save", "Quit"])
     game.play()

@@ -197,6 +197,18 @@ def test_a_broken_loop_from_before_the_second_ending_catches_up_as_the_bell(unlo
     assert meta.toDict() == before
 
 
+def test_a_save_holding_every_clue_catches_up_every_thread(unlocks):
+    meta = MetaState()
+    for clue in achievements.CLUES:
+        meta.learn(clue)
+    before = meta.toDict()
+    achievements.catchUp(meta)
+    assert unlocks.count(achievements.EVERY_THREAD) == 1
+    assert unlocks[-1] == achievements.EVERY_THREAD
+    assert not any(a.startswith("ended-") for a in unlocks)
+    assert meta.toDict() == before
+
+
 def _playAndReadSave(scripted, script):
     game, ui = scripted(script)
     game.play()

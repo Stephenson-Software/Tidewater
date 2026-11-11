@@ -1,0 +1,14 @@
+{
+  "comment": "Tidewater's link-preview card (web/og.png, the og:image in web/index.html). Rendered by community-site-kit tools/og-card at 5e3329e2f50d9700ad60979270557fb0e3de98f8; see og-card/README.md.",
+  "output": "../web/og.png",
+  "scene": "village",
+  "seed": 9,
+  "sun": { "azimuth": 250, "elevation": 4 },
+  "wordmark": "A time-loop text adventure",
+  "title": "Tidewater",
+  "subtitle": "A day in a fishing village that will not end.",
+  "url": "tidewater.danielstephenson.dev",
+  "accent": "#e0a458",
+  "palette": ["#4a6fa5", "#a5493f", "#6b8f71", "#c9b27c"],
+  "alt": "A village of houses with blue, red, green and sand roofs along crossing lanes at dusk, the street lamps just lit, beside the title Tidewater."
+}

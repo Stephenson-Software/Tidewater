@@ -84,6 +84,10 @@ uv run --with pillow python art/render.py --strata-golden /path/to/strata-golden
 
 The script places the sun from each still's date, time and place, and refuses to render a still whose sun is not filled in. The PNGs are committed, and `tests/test_stills.py` holds them to the manifest's size budget.
 
+## Link-preview card
+
+A shared link to the game unfurls with `web/og.png`, a 1200×630 card also rendered with Strata, from [`og-card/card.json`](og-card/card.json). `web/index.html` names it in its `og:` and `twitter:` tags and links it from GitHub's raw host, because arcade serves only the page and the game bundle. `tests/test_og_image.py` checks the PNG's size and holds the page's alt text to the card's. How to re-render it is in [og-card/README.md](og-card/README.md).
+
 ## Development
 
 ```bash
